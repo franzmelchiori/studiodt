@@ -15,10 +15,10 @@ class PatientFolders:
     """
     def __init__(self, path_to_start='.', suffix_to_find='bla'):
         if path_to_start == '.':
-            path_to_start = os.getcwd()
+            self.path_to_start = os.getcwd()
         else:
-            path_to_start = 'bla'
-        print(path_to_start)
+            self.path_to_start = path_to_start
+        print(self.path_to_start)
 
     def get_folders():
         """ get all the folders within the given path
