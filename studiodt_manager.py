@@ -21,7 +21,13 @@ class PatientMedicalRecordPaths:
         self.path_to_start = path_to_start
         self.suffix_to_find = suffix_to_find
         self.medical_records = self.find_medical_records()
-        print(self.medical_records)
+
+    def __repr__(self):
+        message = ''
+        for medical_record in self.medical_records:
+            message += medical_record
+            message += '\r\n'
+        return message
 
     def get_folders(self):
         """ get all the folders within the given path
@@ -50,3 +56,4 @@ class PatientMedicalRecordPaths:
 
 if __name__ == '__main__':
     pmrp = PatientMedicalRecordPaths()
+    print(pmrp)
