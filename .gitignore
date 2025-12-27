@@ -1,5 +1,9 @@
 # personal files
 doc/
+pat_studiodt_monitoraggio_scuole_infanzia/*.md
+pat_studiodt_monitoraggio_scuole_infanzia/*.csv
+pat_studiodt_monitoraggio_scuole_infanzia/doc/
+pat_studiodt_monitoraggio_scuole_infanzia/misure_2024_25/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
