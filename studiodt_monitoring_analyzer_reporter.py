@@ -197,13 +197,29 @@ if __name__ == '__main__':
         toggle_load_dataframe=True).dataframe_scuole_infanzia
 
     nomi_scuole = dataframe_scuole_infanzia_2024_25['nome_scuola_file'].unique()
+    numeri_circoli = dataframe_scuole_infanzia_2024_25['numero_circolo'].unique()
     label_features_rilevazione_1 = dataframe_scuole_infanzia_2024_25.columns[8:22]
     label_features_rilevazione_2 = dataframe_scuole_infanzia_2024_25.columns[25:39]
 
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
-    # TODO | chart | provincia | pie | numero bimbi per scuola (111 parti) | ci sono grandi e piccole scuole?
+	# 1. rappresentazione territoriale
+	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
+    dimensioni_circoli = []
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_scuola_infanzia = dataframe_scuole_infanzia_2024_25[filter_club]
+        dimensioni_circoli.append([len(dataframe_scuola_infanzia), 'c{}'.format(numero_circolo)])
+    dimensioni_circoli.sort()
+    fig, ax = plt.subplots()
+    ax.pie([circolo[0] for circolo in dimensioni_circoli],
+           colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_circoli))],
+           labels=[circolo[1] for circolo in dimensioni_circoli],
+           radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
+    plt.title('Bambini per circolo [n]')
+    plt.show()
+	#   - chart | provincia | pie | numero bimbi nelle scuole (111) | ci sono grandi e piccole scuole?
     dimensioni_nomi_scuole = []
     for nome_scuola in nomi_scuole:
         filter_school = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
@@ -217,8 +233,10 @@ if __name__ == '__main__':
            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
     plt.title('Bambini per scuola [n]')
     plt.show()
-
-    # TODO | chart | provincia | pie | numero bimbi per genere (m, f, nd) e di cui stranieri (T, F, nd) | ci sono squilibri di genere e per etnia?
+    
+    # 2. rappresentazione genere e provenienza (M, F)
+	# 	- chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
+	# 	- TODO | chart | circoli | pie | percentuale bimbi nel circolo per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     filter_isna_mf = dataframe_scuole_infanzia_2024_25['m_f'].isna()
     filter_isna_gs = dataframe_scuole_infanzia_2024_25['genitore_straniero'].isna()
     filter_isna = filter_isna_mf | filter_isna_gs
