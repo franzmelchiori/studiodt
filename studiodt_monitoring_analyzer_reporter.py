@@ -355,6 +355,10 @@ if __name__ == '__main__':
         ax.hist(eta_r, bins=int(eta_r.max()-eta_r.min()), label='riccio', color='green', alpha=0.5)
         ax.set_xlabel('mesi')
         ax.set_ylabel('numero bambini')
+        ax.spines.left.set_visible(False)
+        ax.spines.right.set_visible(False)
+        ax.spines.top.set_visible(False)
+        ax.spines.bottom.set_visible(False)
         ax.legend()
         ax.vlines(eta_c.mean(), 0, vlines_height, color='blue', label=str(math.ceil(eta_c.mean())))
         ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), vlines_height))
@@ -383,166 +387,222 @@ if __name__ == '__main__':
         plt.close()
 
 	# 5. rappresentazione metriche
-	# 	- chart | provincia | hist | distribuzione dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
-	# 	- TODO | chart | circoli | hist | distribuzione dei bimbi per ogni metrica, rilevazione 1 e 2
-	# 	- TODO | next | chart | circoli | boxplot | distribuzione metriche rilevazione 1 e 2 nei circoli
-	# 	- TODO | next | chart | bambini | radar | distribuzione metriche rilevazione 1 e 2 | scuole di bimbi
-    ids_features = list(range(len(LABELS_CNG_FEATURES)))
-    fig, axs = plt.subplots(len(ids_features), 1)
-    for id_feat in ids_features:
-        label_feature_cng = LABELS_CNG_FEATURES[id_feat]
-        label_feature_rcc = LABELS_RCC_FEATURES[id_feat]
-        label_feature = label_feature_cng.removeprefix('storia_coniglietto_').replace('_', ' ')
-        filter_isna_cng = dataframe_scuole_infanzia_2024_25[label_feature_cng].isna()
-        filter_isna_rcc = dataframe_scuole_infanzia_2024_25[label_feature_rcc].isna()
-        feature_cng = dataframe_scuole_infanzia_2024_25.loc[(filter_isna_cng == False), label_feature_cng]
-        feature_rcc = dataframe_scuole_infanzia_2024_25.loc[(filter_isna_rcc == False), label_feature_rcc]
-        axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, label='coniglietto [media bambini]', color='blue', alpha=0.5)
-        axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, label='riccio [media bambini]', color='green', alpha=0.5)
-        if id_feat == 0:
-            axs[id_feat].legend()
-            axs[id_feat].set_title('StudioDT Protocollo 2024-25 [0-100]')
-        axs[id_feat].set_ylabel(label_feature, rotation='horizontal', ha='right')
+	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
+    def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
+        ids_features = list(range(len(LABELS_CNG_FEATURES)))
+        fig, axs = plt.subplots(len(ids_features), 1)
+        for id_feat in ids_features:
+            label_feature_cng = LABELS_CNG_FEATURES[id_feat]
+            label_feature_rcc = LABELS_RCC_FEATURES[id_feat]
+            label_feature = label_feature_cng.removeprefix('storia_coniglietto_').replace('_', ' ')
+            filter_isna_cng = dataframe_bimbi[label_feature_cng].isna()
+            filter_isna_rcc = dataframe_bimbi[label_feature_rcc].isna()
+            feature_cng = dataframe_bimbi.loc[(filter_isna_cng == False), label_feature_cng]
+            feature_rcc = dataframe_bimbi.loc[(filter_isna_rcc == False), label_feature_rcc]
+            axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, label='coniglietto', color='blue', alpha=0.5)
+            axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, label='riccio', color='green', alpha=0.5)
+            axs[id_feat].set_ylabel(label_feature, rotation='horizontal', ha='right')
+            if id_feat == 0:
+                axs[id_feat].set_title(title_prefix + 'StudioDT Protocollo 2024-25')
+            if id_feat == ids_features[-1]:
+                axs[id_feat].legend(loc='lower left')
+                axs[id_feat].set_xlabel('media punteggio metrica')
+            axs[id_feat].spines.left.set_visible(False)
+            axs[id_feat].spines.right.set_visible(False)
+            axs[id_feat].spines.top.set_visible(False)
+            axs[id_feat].spines.bottom.set_visible(False)
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    chart_hist_distribuzioni_metriche(dataframe_scuole_infanzia_2024_25,
+                                      'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_05a_provincia_hist_distribuzioni_metriche')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
+	# 	- chart | circoli | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2
+	# 	- TODO | next | chart | circoli | boxplot | distribuzioni metriche rilevazione 1 e 2 nei circoli
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        chart_hist_distribuzioni_metriche(dataframe_bimbi,
+                                          'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_05b_circolo_{}_hist_distribuzioni_metriche'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
+	# 	- TODO | next | chart | bambini | radar | distribuzioni metriche rilevazione 1 e 2 | bimbi raggruppati per scuole | scuola per scuola, ci sono gruppi di bimbi che piu' marcatamente cambiano (in meglio o in peggio)?
+    # best_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[0]
+    # filter_isbs_rcc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == best_scuola_infanzia_rcc
+    # dataframe_best_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25[filter_isbs_rcc]
+    # data = [
+    #     (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[0], [
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[0].values,
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[0].values]),
+    #     (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[1], [
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[1].values,
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[1].values]),
+    #     (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[2], [
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[2].values,
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[2].values]),
+    #     (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[3], [
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[3].values,
+    #         dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[3].values])]
+    # N = 14
+    # theta = radar_factory(N, frame='polygon')
+    # spoke_labels = [label.removeprefix('storia_coniglietto_').replace('_', ' ') for label in LABELS_CNG_FEATURES]
+    # fig, axs = plt.subplots(figsize=(9, 9), nrows=2, ncols=2,
+    #                         subplot_kw=dict(projection='radar'))
+    # fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
+    # colors = ['r', 'y']
+    ## Plot the four cases from the example data on separate Axes
+    # print_spoke_labels = True
+    # for ax, (title, case_data) in zip(axs.flat, data):
+    #     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+    #     ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
+    #                  horizontalalignment='center', verticalalignment='center')
+    #     for d, color in zip(case_data, colors):
+    #         ax.plot(theta, d, color=color)
+    #         ax.fill(theta, d, facecolor=color, alpha=0.25, label='_nolegend_')
+    #     if print_spoke_labels:
+    #         ax.set_varlabels(spoke_labels)
+    #         print_spoke_labels = False
+    #     else:
+    #         ax.set_varlabels('')
+    ## add legend relative to top-left plot
+    # legend = axs[0, 0].legend(('riccio', 'coniglietto'), loc=(0.9, .95),
+    #                        labelspacing=0.1, fontsize='small')
+    # fig.text(0.5, 0.965, 'StudioDT Protocollo 2024-25 [0-100]',
+    #          horizontalalignment='center', color='black', weight='bold', size='large')
+    # fig.text(0.5, 0.935, best_scuola_infanzia_rcc.replace('_', ' ').title(),
+    #          horizontalalignment='center', color='black', size='large')
+    # worst_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[7]
+    # filter_isbs_rcc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == worst_scuola_infanzia_rcc
+    # dataframe_worst_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25[filter_isbs_rcc]
+    # data = [
+    #     (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[0], [
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[0].values,
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[0].values]),
+    #     (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[1], [
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[1].values,
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[1].values]),
+    #     (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[2], [
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[2].values,
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[2].values]),
+    #     (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[3], [
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[3].values,
+    #         dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[3].values])]
+    # N = 14
+    # theta = radar_factory(N, frame='polygon')
+    # spoke_labels = [label.removeprefix('storia_coniglietto_').replace('_', ' ') for label in LABELS_CNG_FEATURES]
+    # fig, axs = plt.subplots(figsize=(9, 9), nrows=2, ncols=2,
+    #                         subplot_kw=dict(projection='radar'))
+    # fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
+    # colors = ['r', 'y']
+    ## Plot the four cases from the example data on separate Axes
+    # print_spoke_labels = True
+    # for ax, (title, case_data) in zip(axs.flat, data):
+    #     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+    #     ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
+    #                  horizontalalignment='center', verticalalignment='center')
+    #     for d, color in zip(case_data, colors):
+    #         ax.plot(theta, d, color=color)
+    #         ax.fill(theta, d, facecolor=color, alpha=0.25, label='_nolegend_')
+    #     if print_spoke_labels:
+    #         ax.set_varlabels(spoke_labels)
+    #         print_spoke_labels = False
+    #     else:
+    #         ax.set_varlabels('')
+    ## add legend relative to top-left plot
+    # legend = axs[0, 0].legend(('riccio', 'coniglietto'), loc=(0.9, .95),
+    #                        labelspacing=0.1, fontsize='small')
+    # fig.text(0.5, 0.965, 'StudioDT Protocollo 2024-25 [0-100]',
+    #          horizontalalignment='center', color='black', weight='bold', size='large')
+    # fig.text(0.5, 0.935, worst_scuola_infanzia_rcc.replace('_', ' ').title(),
+    #          horizontalalignment='center', color='black', size='large')
+    # if TOGGLE_PLT_SHOW:
+    #     plt.show()
+    # plt.close()
 
-    # 6. rappresentazione performance
-    #   - chart | scuole | hist | scuola per scuola (111), distribuzione dei bimbi, ognuno come media delle metriche, rilevazione 1 e 2 (0-10) | ci sono scuole che piu' marcatamente cambiano (in meglio o in peggio)?
-    performance_scuole_infanzia_rcc = []
-    for nome_scuola in nomi_scuole:
-        filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
-        performance_scuole_infanzia_rcc.append(dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1).mean())
-    series_performance_scuole_infanzia_rcc = pd.Series(performance_scuole_infanzia_rcc, index=nomi_scuole).sort_values(ascending=False)
-    
-    best_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[:int(NUMBER_SCHOOL_CHART/2)]
-    worst_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[-int(NUMBER_SCHOOL_CHART/2):]
-    select_scuole_infanzia_rcc = pd.concat([best_scuole_infanzia_rcc, worst_scuole_infanzia_rcc])
-
-    id_scuola = 0
-    fig, axs = plt.subplots(len(select_scuole_infanzia_rcc), 1)
-    for nome_scuola in select_scuole_infanzia_rcc.index:
-        filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
-        dataframe_scuola_infanzia_cng = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_CNG_FEATURES].mean(axis=1)
-        dataframe_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1)
-        filter_isna_cng = dataframe_scuola_infanzia_cng.isna()
-        filter_isna_rcc = dataframe_scuola_infanzia_rcc.isna()
-        axs[id_scuola].hist(dataframe_scuola_infanzia_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='coniglietto [media metriche]', color='blue', alpha=0.5)
-        axs[id_scuola].hist(dataframe_scuola_infanzia_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='riccio [media metriche]', color='green', alpha=0.5)
-        if pd.isna(dataframe_scuola_infanzia_cng.mean()) == False:
-            axs[id_scuola].vlines(dataframe_scuola_infanzia_cng.mean(), 0, 10, color='blue')
-            axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_cng.mean())), (dataframe_scuola_infanzia_cng.mean(), 10))
-        if pd.isna(dataframe_scuola_infanzia_rcc.mean()) == False:
-            axs[id_scuola].vlines(dataframe_scuola_infanzia_rcc.mean(), 0, 10, color='green')
-            axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_rcc.mean())), (dataframe_scuola_infanzia_rcc.mean(), 10))
-        if id_scuola == 0:
-            axs[id_scuola].legend()
-            axs[id_scuola].set_title('StudioDT Protocollo 2024-25 [0-100]')
-        axs[id_scuola].set_ylabel(nome_scuola.title().replace('_', ' '), rotation='horizontal', ha='right')
-        id_scuola += 1
+	# 6. rappresentazione performance
+	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
+    # performance_scuole_infanzia_rcc = []
+    # for nome_scuola in nomi_scuole:
+    #     filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
+    #     performance_scuole_infanzia_rcc.append(dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1).mean())
+    # series_performance_scuole_infanzia_rcc = pd.Series(performance_scuole_infanzia_rcc, index=nomi_scuole).sort_values(ascending=False)
+    # best_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[:int(NUMBER_SCHOOL_CHART/2)]
+    # worst_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[-int(NUMBER_SCHOOL_CHART/2):]
+    # select_scuole_infanzia_rcc = pd.concat([best_scuole_infanzia_rcc, worst_scuole_infanzia_rcc])
+    # id_scuola = 0
+    # fig, axs = plt.subplots(len(select_scuole_infanzia_rcc), 1)
+    # for nome_scuola in select_scuole_infanzia_rcc.index:
+    #     filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
+    #     dataframe_scuola_infanzia_cng = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_CNG_FEATURES].mean(axis=1)
+    #     dataframe_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1)
+    #     filter_isna_cng = dataframe_scuola_infanzia_cng.isna()
+    #     filter_isna_rcc = dataframe_scuola_infanzia_rcc.isna()
+    #     axs[id_scuola].hist(dataframe_scuola_infanzia_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='coniglietto [media metriche]', color='blue', alpha=0.5)
+    #     axs[id_scuola].hist(dataframe_scuola_infanzia_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='riccio [media metriche]', color='green', alpha=0.5)
+    #     if pd.isna(dataframe_scuola_infanzia_cng.mean()) == False:
+    #         axs[id_scuola].vlines(dataframe_scuola_infanzia_cng.mean(), 0, 10, color='blue')
+    #         axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_cng.mean())), (dataframe_scuola_infanzia_cng.mean(), 10))
+    #     if pd.isna(dataframe_scuola_infanzia_rcc.mean()) == False:
+    #         axs[id_scuola].vlines(dataframe_scuola_infanzia_rcc.mean(), 0, 10, color='green')
+    #         axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_rcc.mean())), (dataframe_scuola_infanzia_rcc.mean(), 10))
+    #     if id_scuola == 0:
+    #         axs[id_scuola].legend()
+    #         axs[id_scuola].set_title('StudioDT Protocollo 2024-25 [0-100]')
+    #     axs[id_scuola].set_ylabel(nome_scuola.title().replace('_', ' '), rotation='horizontal', ha='right')
+    #     id_scuola += 1
+    # if TOGGLE_PLT_SHOW:
+    #     plt.show()
+    # plt.close()
+	# 	- chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
+	# 	- TODO | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) rilevazione 1 (y) e 2 (x)
+	# 	- TODO | next | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
+	# 	- TODO | next | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
+    performance_circoli_rcc = []
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        performance_circoli_rcc.append(dataframe_scuole_infanzia_2024_25.loc[filter_club, LABELS_RCC_FEATURES].mean(axis=1).mean())
+    series_performance_circoli_rcc = pd.Series(performance_circoli_rcc, index=numeri_circoli).sort_values(ascending=False)
+    fig, axs = plt.subplots(len(numeri_circoli), 1)
+    list_id_circoli = list(range(len(series_performance_circoli_rcc)))
+    for id_circolo in list_id_circoli:
+        numero_circolo = series_performance_circoli_rcc.index[id_circolo]
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        dataframe_bimbi_cng = dataframe_bimbi.loc[filter_club, LABELS_CNG_FEATURES].mean(axis=1)
+        dataframe_bimbi_rcc = dataframe_bimbi.loc[filter_club, LABELS_RCC_FEATURES].mean(axis=1)
+        filter_isna_cng = dataframe_bimbi_cng.isna()
+        filter_isna_rcc = dataframe_bimbi_rcc.isna()
+        axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='coniglietto', color='blue', alpha=0.5)
+        axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='riccio', color='green', alpha=0.5)
+        if pd.isna(dataframe_bimbi_cng.mean()) == False:
+            axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, color='blue')
+            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean(), 50))
+        if pd.isna(dataframe_bimbi_rcc.mean()) == False:
+            axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, color='green')
+            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean(), 50))
+        axs[id_circolo].set_ylabel('C{}'.format(numero_circolo), rotation='horizontal', ha='right')
+        if id_circolo == 0:
+            axs[id_circolo].set_title('PAT | StudioDT Protocollo 2024-25')
+        if id_circolo == list_id_circoli[-1]:
+            axs[id_circolo].legend(loc='lower left')
+            axs[id_circolo].set_xlabel('media punteggi metriche')
+        axs[id_circolo].spines.left.set_visible(False)
+        axs[id_circolo].spines.right.set_visible(False)
+        axs[id_circolo].spines.top.set_visible(False)
+        axs[id_circolo].spines.bottom.set_visible(False)
+    if TOGGLE_FIG_SAVEFIG:
+        fig.savefig(
+            os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            'chart_06a_provincia_hist_performance'),
+            dpi=300, bbox_inches='tight', pad_inches=0.25)
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-    
-    # TODO | chart | bimbi | radar | scuola per scuola (111), bimbo per bimbo (1669), metriche (14) emisfero sinistro (7) e destro (7), rilevazione 1 e 2 (0-10) | scuola per scuola, ci sono gruppi di bimbi che piu' marcatamente cambiano (in meglio o in peggio)?
-    best_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[0]
-    filter_isbs_rcc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == best_scuola_infanzia_rcc
-    dataframe_best_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25[filter_isbs_rcc]
-    data = [
-        (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[0], [
-            dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[0].values,
-            dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[0].values]),
-        (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[1], [
-            dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[1].values,
-            dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[1].values]),
-        (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[2], [
-            dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[2].values,
-            dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[2].values]),
-        (dataframe_best_scuola_infanzia_rcc['cod_b'].iloc[3], [
-            dataframe_best_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[3].values,
-            dataframe_best_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[3].values])]
-    
-    N = 14
-    theta = radar_factory(N, frame='polygon')
-    spoke_labels = [label.removeprefix('storia_coniglietto_').replace('_', ' ') for label in LABELS_CNG_FEATURES]
-    
-    fig, axs = plt.subplots(figsize=(9, 9), nrows=2, ncols=2,
-                            subplot_kw=dict(projection='radar'))
-    fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
-    
-    colors = ['r', 'y']
-    # Plot the four cases from the example data on separate Axes
-    print_spoke_labels = True
-    for ax, (title, case_data) in zip(axs.flat, data):
-        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-        ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
-                     horizontalalignment='center', verticalalignment='center')
-        for d, color in zip(case_data, colors):
-            ax.plot(theta, d, color=color)
-            ax.fill(theta, d, facecolor=color, alpha=0.25, label='_nolegend_')
-        if print_spoke_labels:
-            ax.set_varlabels(spoke_labels)
-            print_spoke_labels = False
-        else:
-            ax.set_varlabels('')
-    
-    # add legend relative to top-left plot
-    legend = axs[0, 0].legend(('riccio', 'coniglietto'), loc=(0.9, .95),
-                           labelspacing=0.1, fontsize='small')
-    fig.text(0.5, 0.965, 'StudioDT Protocollo 2024-25 [0-100]',
-             horizontalalignment='center', color='black', weight='bold', size='large')
-    fig.text(0.5, 0.935, best_scuola_infanzia_rcc.replace('_', ' ').title(),
-             horizontalalignment='center', color='black', size='large')
-
-    worst_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[7]
-    filter_isbs_rcc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == worst_scuola_infanzia_rcc
-    dataframe_worst_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25[filter_isbs_rcc]
-    data = [
-        (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[0], [
-            dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[0].values,
-            dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[0].values]),
-        (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[1], [
-            dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[1].values,
-            dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[1].values]),
-        (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[2], [
-            dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[2].values,
-            dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[2].values]),
-        (dataframe_worst_scuola_infanzia_rcc['cod_b'].iloc[3], [
-            dataframe_worst_scuola_infanzia_rcc[LABELS_RCC_FEATURES].iloc[3].values,
-            dataframe_worst_scuola_infanzia_rcc[LABELS_CNG_FEATURES].iloc[3].values])]
-    
-    N = 14
-    theta = radar_factory(N, frame='polygon')
-    spoke_labels = [label.removeprefix('storia_coniglietto_').replace('_', ' ') for label in LABELS_CNG_FEATURES]
-    
-    fig, axs = plt.subplots(figsize=(9, 9), nrows=2, ncols=2,
-                            subplot_kw=dict(projection='radar'))
-    fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
-    
-    colors = ['r', 'y']
-    # Plot the four cases from the example data on separate Axes
-    print_spoke_labels = True
-    for ax, (title, case_data) in zip(axs.flat, data):
-        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-        ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
-                     horizontalalignment='center', verticalalignment='center')
-        for d, color in zip(case_data, colors):
-            ax.plot(theta, d, color=color)
-            ax.fill(theta, d, facecolor=color, alpha=0.25, label='_nolegend_')
-        if print_spoke_labels:
-            ax.set_varlabels(spoke_labels)
-            print_spoke_labels = False
-        else:
-            ax.set_varlabels('')
-    
-    # add legend relative to top-left plot
-    legend = axs[0, 0].legend(('riccio', 'coniglietto'), loc=(0.9, .95),
-                           labelspacing=0.1, fontsize='small')
-    fig.text(0.5, 0.965, 'StudioDT Protocollo 2024-25 [0-100]',
-             horizontalalignment='center', color='black', weight='bold', size='large')
-    fig.text(0.5, 0.935, worst_scuola_infanzia_rcc.replace('_', ' ').title(),
-             horizontalalignment='center', color='black', size='large')
-    if TOGGLE_PLT_SHOW:
-        plt.show()
-    plt.close()
-    pass
