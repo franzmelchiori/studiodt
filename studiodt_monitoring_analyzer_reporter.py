@@ -25,7 +25,7 @@ from pat_studiodt_monitoraggio_scuole_infanzia import pat_studiodt_misurazione_2
 
 
 BINS_NORM_METRIC = 20
-NUMBER_SCHOOL_CHART = 20
+# NUMBER_SCHOOL_CHART = 20
 
 
 PATH_SCUOLE_INFANZIA = os.path.abspath('' + \
@@ -249,10 +249,11 @@ if __name__ == '__main__':
     dimensioni_nomi_scuole.sort()
     fig, ax = plt.subplots()
     ax.pie([scuola[0] for scuola in dimensioni_nomi_scuole],
+           explode=[0 for scuola in dimensioni_nomi_scuole],
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_nomi_scuole))],
-           labels=[scuola[1] for scuola in dimensioni_nomi_scuole],
-           radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('PAT | Bambini per scuola')
+           labels=[scuola[1] if scuola[0] >= 20 else '' for scuola in dimensioni_nomi_scuole],
+           rotatelabels=True, radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
+    plt.title('PAT | Scuole con almeno 20 bambini')
     if TOGGLE_FIG_SAVEFIG:
         fig.savefig(
             os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
@@ -262,7 +263,7 @@ if __name__ == '__main__':
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-    
+
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -345,14 +346,14 @@ if __name__ == '__main__':
 
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
-    def chart_hist_bimbi_eta(dataframe_bimbi, vlines_height=200, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
+    def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
         filter_isna_ce = dataframe_bimbi['storia_coniglietto_eta'].isna()
         filter_isna_re = dataframe_bimbi['storia_riccio_eta'].isna()
         eta_c = dataframe_bimbi.loc[(filter_isna_ce == False), 'storia_coniglietto_eta']
         eta_r = dataframe_bimbi.loc[(filter_isna_re == False), 'storia_riccio_eta']
         fig, ax = plt.subplots()
-        ax.hist(eta_c, bins=int(eta_c.max()-eta_c.min()), label='coniglietto', color='blue', alpha=0.5)
-        ax.hist(eta_r, bins=int(eta_r.max()-eta_r.min()), label='riccio', color='green', alpha=0.5)
+        ax.hist(eta_c, bins=60, range=(40, 100), label='coniglietto', color='blue', alpha=0.5)
+        ax.hist(eta_r, bins=60, range=(40, 100), label='riccio', color='green', alpha=0.5)
         ax.set_xlabel('mesi')
         ax.set_ylabel('numero bambini')
         ax.spines.left.set_visible(False)
@@ -360,10 +361,10 @@ if __name__ == '__main__':
         ax.spines.top.set_visible(False)
         ax.spines.bottom.set_visible(False)
         ax.legend()
-        ax.vlines(eta_c.mean(), 0, vlines_height, color='blue', label=str(math.ceil(eta_c.mean())))
-        ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), vlines_height))
-        ax.vlines(eta_r.mean(), 0, vlines_height, color='green', label=str(math.ceil(eta_c.mean())))
-        ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), vlines_height))
+        ax.vlines(eta_c.mean(), 0, 1, transform=ax.get_xaxis_transform(), color='blue', label=str(math.ceil(eta_c.mean())))
+        ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), 0))
+        ax.vlines(eta_r.mean(), 0, 1, transform=ax.get_xaxis_transform(), color='green', label=str(math.ceil(eta_c.mean())))
+        ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), 0))
         plt.title(title_prefix + 'Età bambini')
         if toggle_fig_savefig:
             fig.savefig(
@@ -372,7 +373,7 @@ if __name__ == '__main__':
                                 filename_suffix),
                 dpi=300, bbox_inches='tight', pad_inches=0.25)
     chart_hist_bimbi_eta(dataframe_scuole_infanzia_2024_25,
-                         200, 'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_04a_provincia_hist_distribuzione_bimbi_eta')
+                         'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_04a_provincia_hist_distribuzione_bimbi_eta')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
@@ -381,7 +382,7 @@ if __name__ == '__main__':
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_hist_bimbi_eta(dataframe_bimbi,
-                             25, 'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_04b_circolo_{}_hist_distribuzione_bimbi_eta'.format(numero_circolo))
+                             'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_04b_circolo_{}_hist_distribuzione_bimbi_eta'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -399,15 +400,16 @@ if __name__ == '__main__':
             filter_isna_rcc = dataframe_bimbi[label_feature_rcc].isna()
             feature_cng = dataframe_bimbi.loc[(filter_isna_cng == False), label_feature_cng]
             feature_rcc = dataframe_bimbi.loc[(filter_isna_rcc == False), label_feature_rcc]
-            axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, label='coniglietto', color='blue', alpha=0.5)
-            axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, label='riccio', color='green', alpha=0.5)
+            axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
+            axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
             axs[id_feat].set_ylabel(label_feature, rotation='horizontal', ha='right')
+            new_ticks = np.array([axs[id_feat].get_yticks()[-1]])
+            axs[id_feat].set_yticks(new_ticks)
             if id_feat == 0:
                 axs[id_feat].set_title(title_prefix + 'StudioDT Protocollo 2024-25')
             if id_feat == ids_features[-1]:
                 axs[id_feat].legend(loc='lower left')
                 axs[id_feat].set_xlabel('media punteggio metrica')
-            axs[id_feat].spines.left.set_visible(False)
             axs[id_feat].spines.right.set_visible(False)
             axs[id_feat].spines.top.set_visible(False)
             axs[id_feat].spines.bottom.set_visible(False)
@@ -579,21 +581,22 @@ if __name__ == '__main__':
         dataframe_bimbi_rcc = dataframe_bimbi.loc[filter_club, LABELS_RCC_FEATURES].mean(axis=1)
         filter_isna_cng = dataframe_bimbi_cng.isna()
         filter_isna_rcc = dataframe_bimbi_rcc.isna()
-        axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='coniglietto', color='blue', alpha=0.5)
-        axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='riccio', color='green', alpha=0.5)
+        axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
+        axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
         if pd.isna(dataframe_bimbi_cng.mean()) == False:
             axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, color='blue')
-            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean(), 50))
+            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean(), 0))
         if pd.isna(dataframe_bimbi_rcc.mean()) == False:
             axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, color='green')
-            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean(), 50))
+            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean(), 0))
         axs[id_circolo].set_ylabel('C{}'.format(numero_circolo), rotation='horizontal', ha='right')
+        new_ticks = np.array([axs[id_circolo].get_yticks()[-1]])
+        axs[id_circolo].set_yticks(new_ticks)
         if id_circolo == 0:
             axs[id_circolo].set_title('PAT | StudioDT Protocollo 2024-25')
         if id_circolo == list_id_circoli[-1]:
             axs[id_circolo].legend(loc='lower left')
             axs[id_circolo].set_xlabel('media punteggi metriche')
-        axs[id_circolo].spines.left.set_visible(False)
         axs[id_circolo].spines.right.set_visible(False)
         axs[id_circolo].spines.top.set_visible(False)
         axs[id_circolo].spines.bottom.set_visible(False)
