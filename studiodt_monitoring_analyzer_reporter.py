@@ -230,12 +230,12 @@ if __name__ == '__main__':
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_circoli))],
            labels=[circolo[1] for circolo in dimensioni_circoli],
            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('PAT | Bambini per circolo [n]')
+    plt.title('PAT | Bambini per circolo')
     if TOGGLE_FIG_SAVEFIG:
         fig.savefig(
             os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
                             FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
-                            'chart_01a_provincia_pie_numero_bimbi_nei_circoli.png'),
+                            'chart_01a_provincia_pie_percentuale_bimbi_nei_circoli.png'),
             dpi=300, bbox_inches='tight', pad_inches=0.25)
     if TOGGLE_PLT_SHOW:
         plt.show()
@@ -252,12 +252,12 @@ if __name__ == '__main__':
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_nomi_scuole))],
            labels=[scuola[1] for scuola in dimensioni_nomi_scuole],
            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('PAT | Bambini per scuola [n]')
+    plt.title('PAT | Bambini per scuola')
     if TOGGLE_FIG_SAVEFIG:
         fig.savefig(
             os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
                             FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
-                            'chart_01b_provincia_pie_numero_bimbi_nelle_scuole.png'),
+                            'chart_01b_provincia_pie_percentuale_bimbi_nelle_scuole.png'),
             dpi=300, bbox_inches='tight', pad_inches=0.25)
     if TOGGLE_PLT_SHOW:
         plt.show()
@@ -276,9 +276,10 @@ if __name__ == '__main__':
         fig, ax = plt.subplots()
         ax.pie([sum(filter_ism_gs), sum(filter_ism), sum(filter_isna), sum(filter_isf), sum(filter_isf_gs)],
             colors = ['lightblue', 'lightblue', 'lightgrey', 'lightpink', 'lightpink'],
+            hatch = ['..', '', '', '', '..'],
             labels=['M straniero', 'M', 'nd', 'F', 'F straniera'],
             radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-        plt.title(title_prefix + 'Bambini per genere [n]')
+        plt.title(title_prefix + 'Bambini per genere')
         if toggle_fig_savefig:
             fig.savefig(
                 os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
@@ -286,9 +287,7 @@ if __name__ == '__main__':
                                 filename_suffix),
                 dpi=300, bbox_inches='tight', pad_inches=0.25)
     chart_pie_bimbi_genere_provenienza(dataframe_scuole_infanzia_2024_25,
-                                       'PAT | ',
-                                       TOGGLE_FIG_SAVEFIG,
-                                       'chart_02a_provincia_pie_percentuale_bimbi_genere_provenienza')
+                                       'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_02a_provincia_pie_percentuale_bimbi_genere_provenienza')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
@@ -298,35 +297,30 @@ if __name__ == '__main__':
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_pie_bimbi_genere_provenienza(dataframe_bimbi,
-                                        'C{} | '.format(numero_circolo),
-                                        TOGGLE_FIG_SAVEFIG,
-                                        'chart_02b_circolo_{}_pie_percentuale_bimbi_genere_provenienza'.format(numero_circolo))
+                                           'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_02b_circolo_{}_pie_percentuale_bimbi_genere_provenienza'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
 
-
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | pie | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
-	# 	- TODO | chart | circoli | pie | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
-	# 	- TODO | next | chart | circoli | hist | numero bimbi seguiti nei circoli dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti fra circoli?
     def chart_pie_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_pie_percentuale_bimbi_seguiti'):
-        filter_isna_cs = dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'].isna()
-        filter_isna_rs = dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'].isna()
-        filter_iscs = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'])
-        filter_isc = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'] == False)
-        filter_isrs = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'])
-        filter_isr = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'] == False)
+        filter_isna_cs = dataframe_bimbi['storia_coniglietto_bambino_seguito'].isna()
+        filter_isna_rs = dataframe_bimbi['storia_riccio_bambino_seguito'].isna()
+        filter_iscs = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'])
+        filter_isc = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'] == False)
+        filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
+        filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
         fig, ax = plt.subplots()
         ax.pie([sum(filter_isrs), sum(filter_isr), sum(filter_isna_rs)],
-            colors = ['lightcoral', 'lightgreen', 'lightgrey'],
+            colors = ['orange', 'lightgreen', 'lightgrey'],
             labels=['riccio seguito', 'non seguito', 'nd'],
             radius=1, wedgeprops=dict(width=0.15, edgecolor='w'))
         ax.pie([sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)],
-            colors = ['lightcoral', 'lightgreen', 'lightgrey'],
+            colors = ['orange', 'lightgreen', 'lightgrey'],
             labels=['coniglietto seguito', '', ''],
             radius=1-0.15, wedgeprops=dict(width=0.15, edgecolor='w'))
-        plt.title(title_prefix + 'Bambini seguiti [n]')
+        plt.title(title_prefix + 'Bambini seguiti')
         if toggle_fig_savefig:
             fig.savefig(
                 os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
@@ -334,32 +328,65 @@ if __name__ == '__main__':
                                 filename_suffix),
                 dpi=300, bbox_inches='tight', pad_inches=0.25)
     chart_pie_bimbi_seguiti(dataframe_scuole_infanzia_2024_25,
-                            'PAT | ',
-                            TOGGLE_FIG_SAVEFIG,
-                            'chart_03a_provincia_pie_percentuale_bimbi_seguiti')
+                            'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_03a_provincia_pie_percentuale_bimbi_seguiti')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-    
-    # TODO | chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
-    filter_isna_ce = dataframe_scuole_infanzia_2024_25['storia_coniglietto_eta'].isna()
-    filter_isna_re = dataframe_scuole_infanzia_2024_25['storia_riccio_eta'].isna()
-    eta_c = dataframe_scuole_infanzia_2024_25.loc[(filter_isna_ce == False), 'storia_coniglietto_eta']
-    eta_r = dataframe_scuole_infanzia_2024_25.loc[(filter_isna_re == False), 'storia_riccio_eta']
-    fig, ax = plt.subplots()
-    ax.hist(eta_c, bins=int(eta_c.max()-eta_c.min()), label='coniglietto', color='blue', alpha=0.5)
-    ax.hist(eta_r, bins=int(eta_r.max()-eta_r.min()), label='riccio', color='green', alpha=0.5)
-    ax.legend()
-    ax.vlines(eta_c.mean(), 0, 200, color='blue', label=str(math.ceil(eta_c.mean())))
-    ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), 200))
-    ax.vlines(eta_r.mean(), 0, 200, color='green', label=str(math.ceil(eta_c.mean())))
-    ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), 200))
-    plt.title('Età bambini [mesi]')
-    if TOGGLE_PLT_SHOW:
-        plt.show()
-    plt.close()
+    # 	- chart | circoli | pie | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
+	# 	- TODO | next | chart | circoli | hist | numero bimbi seguiti nei circoli dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti fra circoli?
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        chart_pie_bimbi_seguiti(dataframe_bimbi,
+                                'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_03b_circolo_{}_pie_percentuale_bimbi_seguiti'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
 
-    # TODO | chart | metriche | hist | metrica per metrica (14), distribuzione dei bimbi, ognuno come valore della metrica, rilevazione 1 e 2 (0-10) | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
+	# 4. rappresentazione eta'
+    #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
+    def chart_hist_bimbi_eta(dataframe_bimbi, vlines_height=200, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
+        filter_isna_ce = dataframe_bimbi['storia_coniglietto_eta'].isna()
+        filter_isna_re = dataframe_bimbi['storia_riccio_eta'].isna()
+        eta_c = dataframe_bimbi.loc[(filter_isna_ce == False), 'storia_coniglietto_eta']
+        eta_r = dataframe_bimbi.loc[(filter_isna_re == False), 'storia_riccio_eta']
+        fig, ax = plt.subplots()
+        ax.hist(eta_c, bins=int(eta_c.max()-eta_c.min()), label='coniglietto', color='blue', alpha=0.5)
+        ax.hist(eta_r, bins=int(eta_r.max()-eta_r.min()), label='riccio', color='green', alpha=0.5)
+        ax.set_xlabel('mesi')
+        ax.set_ylabel('numero bambini')
+        ax.legend()
+        ax.vlines(eta_c.mean(), 0, vlines_height, color='blue', label=str(math.ceil(eta_c.mean())))
+        ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), vlines_height))
+        ax.vlines(eta_r.mean(), 0, vlines_height, color='green', label=str(math.ceil(eta_c.mean())))
+        ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), vlines_height))
+        plt.title(title_prefix + 'Età bambini')
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    chart_hist_bimbi_eta(dataframe_scuole_infanzia_2024_25,
+                         200, 'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_04a_provincia_hist_distribuzione_bimbi_eta')
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
+    #   - chart | circoli | hist | eta' bimbi rilevazione 1 e 2 (mesi) nei circoli | qual e' il cambiamento nella distribuzione dell'eta'?
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        chart_hist_bimbi_eta(dataframe_bimbi,
+                             25, 'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_04b_circolo_{}_hist_distribuzione_bimbi_eta'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
+
+	# 5. rappresentazione metriche
+	# 	- chart | provincia | hist | distribuzione dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
+	# 	- TODO | chart | circoli | hist | distribuzione dei bimbi per ogni metrica, rilevazione 1 e 2
+	# 	- TODO | next | chart | circoli | boxplot | distribuzione metriche rilevazione 1 e 2 nei circoli
+	# 	- TODO | next | chart | bambini | radar | distribuzione metriche rilevazione 1 e 2 | scuole di bimbi
     ids_features = list(range(len(LABELS_CNG_FEATURES)))
     fig, axs = plt.subplots(len(ids_features), 1)
     for id_feat in ids_features:
@@ -380,7 +407,8 @@ if __name__ == '__main__':
         plt.show()
     plt.close()
 
-    # TODO | chart | scuole | hist | scuola per scuola (111), distribuzione dei bimbi, ognuno come media delle metriche, rilevazione 1 e 2 (0-10) | ci sono scuole che piu' marcatamente cambiano (in meglio o in peggio)?
+    # 6. rappresentazione performance
+    #   - chart | scuole | hist | scuola per scuola (111), distribuzione dei bimbi, ognuno come media delle metriche, rilevazione 1 e 2 (0-10) | ci sono scuole che piu' marcatamente cambiano (in meglio o in peggio)?
     performance_scuole_infanzia_rcc = []
     for nome_scuola in nomi_scuole:
         filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
