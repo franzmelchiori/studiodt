@@ -28,6 +28,16 @@ BINS_NORM_METRIC = 20
 NUMBER_SCHOOL_CHART = 20
 
 
+PATH_SCUOLE_INFANZIA = os.path.abspath('' + \
+    'C:\\franzmelchiori\\projects\\studiodt' + \
+    '\\pat_studiodt_monitoraggio_scuole_infanzia')
+PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 = os.path.abspath('' + \
+    PATH_SCUOLE_INFANZIA + \
+    '\\grafici_2024_25')
+FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 = \
+    '\\pat_studiodt_monitoraggio_scuole_infanzia_2024_25_'
+
+
 # INDEXES
 #     'nome_scuola_file'
 #     'nome_scuola'
@@ -191,6 +201,9 @@ if __name__ == '__main__':
     pd.set_option('display.width', None)
     pd.set_option('display.max_colwidth', None)
 
+    TOGGLE_FIG_SAVEFIG = True
+    TOGGLE_PLT_SHOW = False
+
     dataframe_scuole_infanzia_2024_25 = pat_sdt_msr_24_25.ScuoleInfanziaXLSX(
         pat_sdt_msr_24_25.PATH_SCUOLE_INFANZIA_MISURE_2024_25,
         pat_sdt_msr_24_25.STUDIODT_SCUOLE_INFANZIA_EXPERIMENT_DESIGN_2024_25,
@@ -210,15 +223,23 @@ if __name__ == '__main__':
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_scuola_infanzia = dataframe_scuole_infanzia_2024_25[filter_club]
-        dimensioni_circoli.append([len(dataframe_scuola_infanzia), 'c{}'.format(numero_circolo)])
+        dimensioni_circoli.append([len(dataframe_scuola_infanzia), 'C{}'.format(numero_circolo)])
     dimensioni_circoli.sort()
     fig, ax = plt.subplots()
     ax.pie([circolo[0] for circolo in dimensioni_circoli],
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_circoli))],
            labels=[circolo[1] for circolo in dimensioni_circoli],
            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('Bambini per circolo [n]')
-    plt.show()
+    plt.title('PAT | Bambini per circolo [n]')
+    if TOGGLE_FIG_SAVEFIG:
+        fig.savefig(
+            os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            'chart_01a_provincia_pie_numero_bimbi_nei_circoli.png'),
+            dpi=300, bbox_inches='tight', pad_inches=0.25)
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
 	#   - chart | provincia | pie | numero bimbi nelle scuole (111) | ci sono grandi e piccole scuole?
     dimensioni_nomi_scuole = []
     for nome_scuola in nomi_scuole:
@@ -231,45 +252,94 @@ if __name__ == '__main__':
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_nomi_scuole))],
            labels=[scuola[1] for scuola in dimensioni_nomi_scuole],
            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('Bambini per scuola [n]')
-    plt.show()
+    plt.title('PAT | Bambini per scuola [n]')
+    if TOGGLE_FIG_SAVEFIG:
+        fig.savefig(
+            os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                            'chart_01b_provincia_pie_numero_bimbi_nelle_scuole.png'),
+            dpi=300, bbox_inches='tight', pad_inches=0.25)
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
     
     # 2. rappresentazione genere e provenienza (M, F)
-	# 	- chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
-	# 	- TODO | chart | circoli | pie | percentuale bimbi nel circolo per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
-    filter_isna_mf = dataframe_scuole_infanzia_2024_25['m_f'].isna()
-    filter_isna_gs = dataframe_scuole_infanzia_2024_25['genitore_straniero'].isna()
-    filter_isna = filter_isna_mf | filter_isna_gs
-    filter_ism = (filter_isna == False) & (dataframe_scuole_infanzia_2024_25['m_f'] == 'm') & (dataframe_scuole_infanzia_2024_25['genitore_straniero'] == False)
-    filter_ism_gs = (filter_isna == False) & (dataframe_scuole_infanzia_2024_25['m_f'] == 'm') & (dataframe_scuole_infanzia_2024_25['genitore_straniero'])
-    filter_isf = (filter_isna == False) & (dataframe_scuole_infanzia_2024_25['m_f'] == 'f') & (dataframe_scuole_infanzia_2024_25['genitore_straniero'] == False)
-    filter_isf_gs = (filter_isna == False) & (dataframe_scuole_infanzia_2024_25['m_f'] == 'f') & (dataframe_scuole_infanzia_2024_25['genitore_straniero'])
-    fig, ax = plt.subplots()
-    ax.pie([sum(filter_ism_gs), sum(filter_ism), sum(filter_isna), sum(filter_isf), sum(filter_isf_gs)],
-           colors = ['lightblue', 'lightblue', 'lightgrey', 'lightpink', 'lightpink'],
-           labels=['M straniero', 'M', 'nd', 'F', 'F straniera'],
-           radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('Bambini per genere [n]')
-    plt.show()
+	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
+    def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
+        filter_isna_mf = dataframe_bimbi['m_f'].isna()
+        filter_isna_gs = dataframe_bimbi['genitore_straniero'].isna()
+        filter_isna = filter_isna_mf | filter_isna_gs
+        filter_ism = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'm') & (dataframe_bimbi['genitore_straniero'] == False)
+        filter_ism_gs = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'm') & (dataframe_bimbi['genitore_straniero'])
+        filter_isf = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'f') & (dataframe_bimbi['genitore_straniero'] == False)
+        filter_isf_gs = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'f') & (dataframe_bimbi['genitore_straniero'])
+        fig, ax = plt.subplots()
+        ax.pie([sum(filter_ism_gs), sum(filter_ism), sum(filter_isna), sum(filter_isf), sum(filter_isf_gs)],
+            colors = ['lightblue', 'lightblue', 'lightgrey', 'lightpink', 'lightpink'],
+            labels=['M straniero', 'M', 'nd', 'F', 'F straniera'],
+            radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
+        plt.title(title_prefix + 'Bambini per genere [n]')
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    chart_pie_bimbi_genere_provenienza(dataframe_scuole_infanzia_2024_25,
+                                       'PAT | ',
+                                       TOGGLE_FIG_SAVEFIG,
+                                       'chart_02a_provincia_pie_percentuale_bimbi_genere_provenienza')
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
+	#   - chart | circoli | pie | percentuale bimbi nel circolo per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
+	#   - TODO | next | chart | circoli | hist | percentuale bimbi nei circoli per genere e provenienza (straniero) | ci sono squilibri di genere, per etnia e fra circoli?
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        chart_pie_bimbi_genere_provenienza(dataframe_bimbi,
+                                        'C{} | '.format(numero_circolo),
+                                        TOGGLE_FIG_SAVEFIG,
+                                        'chart_02b_circolo_{}_pie_percentuale_bimbi_genere_provenienza'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
 
-    # TODO | chart | provincia | pie | numero bimbi seguiti rilevazione 1 e 2 (T, F, nd) | c'e' un cambiamento nel numero di bimbi seguiti?
-    filter_isna_cs = dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'].isna()
-    filter_isna_rs = dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'].isna()
-    filter_iscs = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'])
-    filter_isc = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'] == False)
-    filter_isrs = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'])
-    filter_isr = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'] == False)
-    fig, ax = plt.subplots()
-    ax.pie([sum(filter_isrs), sum(filter_isr), sum(filter_isna_rs)],
-           colors = ['lightcoral', 'lightgreen', 'lightgrey'],
-           labels=['riccio seguito', 'non seguito', 'nd'],
-           radius=1, wedgeprops=dict(width=0.15, edgecolor='w'))
-    ax.pie([sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)],
-           colors = ['lightcoral', 'lightgreen', 'lightgrey'],
-           labels=['coniglietto seguito', '', ''],
-           radius=1-0.15, wedgeprops=dict(width=0.15, edgecolor='w'))
-    plt.title('Bambini seguiti [n]')
-    plt.show()
+
+	# 3. rappresentazione sostegno
+	# 	- chart | provincia | pie | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
+	# 	- TODO | chart | circoli | pie | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
+	# 	- TODO | next | chart | circoli | hist | numero bimbi seguiti nei circoli dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti fra circoli?
+    def chart_pie_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_pie_percentuale_bimbi_seguiti'):
+        filter_isna_cs = dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'].isna()
+        filter_isna_rs = dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'].isna()
+        filter_iscs = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'])
+        filter_isc = (filter_isna_cs == False) & (dataframe_scuole_infanzia_2024_25['storia_coniglietto_bambino_seguito'] == False)
+        filter_isrs = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'])
+        filter_isr = (filter_isna_rs == False) & (dataframe_scuole_infanzia_2024_25['storia_riccio_bambino_seguito'] == False)
+        fig, ax = plt.subplots()
+        ax.pie([sum(filter_isrs), sum(filter_isr), sum(filter_isna_rs)],
+            colors = ['lightcoral', 'lightgreen', 'lightgrey'],
+            labels=['riccio seguito', 'non seguito', 'nd'],
+            radius=1, wedgeprops=dict(width=0.15, edgecolor='w'))
+        ax.pie([sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)],
+            colors = ['lightcoral', 'lightgreen', 'lightgrey'],
+            labels=['coniglietto seguito', '', ''],
+            radius=1-0.15, wedgeprops=dict(width=0.15, edgecolor='w'))
+        plt.title(title_prefix + 'Bambini seguiti [n]')
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    chart_pie_bimbi_seguiti(dataframe_scuole_infanzia_2024_25,
+                            'PAT | ',
+                            TOGGLE_FIG_SAVEFIG,
+                            'chart_03a_provincia_pie_percentuale_bimbi_seguiti')
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
     
     # TODO | chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     filter_isna_ce = dataframe_scuole_infanzia_2024_25['storia_coniglietto_eta'].isna()
@@ -285,7 +355,9 @@ if __name__ == '__main__':
     ax.vlines(eta_r.mean(), 0, 200, color='green', label=str(math.ceil(eta_c.mean())))
     ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), 200))
     plt.title('Età bambini [mesi]')
-    plt.show()
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
 
     # TODO | chart | metriche | hist | metrica per metrica (14), distribuzione dei bimbi, ognuno come valore della metrica, rilevazione 1 e 2 (0-10) | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     ids_features = list(range(len(LABELS_CNG_FEATURES)))
@@ -304,7 +376,9 @@ if __name__ == '__main__':
             axs[id_feat].legend()
             axs[id_feat].set_title('StudioDT Protocollo 2024-25 [0-100]')
         axs[id_feat].set_ylabel(label_feature, rotation='horizontal', ha='right')
-    plt.show()
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
 
     # TODO | chart | scuole | hist | scuola per scuola (111), distribuzione dei bimbi, ognuno come media delle metriche, rilevazione 1 e 2 (0-10) | ci sono scuole che piu' marcatamente cambiano (in meglio o in peggio)?
     performance_scuole_infanzia_rcc = []
@@ -338,7 +412,9 @@ if __name__ == '__main__':
             axs[id_scuola].set_title('StudioDT Protocollo 2024-25 [0-100]')
         axs[id_scuola].set_ylabel(nome_scuola.title().replace('_', ' '), rotation='horizontal', ha='right')
         id_scuola += 1
-    plt.show()
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
     
     # TODO | chart | bimbi | radar | scuola per scuola (111), bimbo per bimbo (1669), metriche (14) emisfero sinistro (7) e destro (7), rilevazione 1 e 2 (0-10) | scuola per scuola, ci sono gruppi di bimbi che piu' marcatamente cambiano (in meglio o in peggio)?
     best_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[0]
@@ -389,7 +465,6 @@ if __name__ == '__main__':
              horizontalalignment='center', color='black', weight='bold', size='large')
     fig.text(0.5, 0.935, best_scuola_infanzia_rcc.replace('_', ' ').title(),
              horizontalalignment='center', color='black', size='large')
-    # plt.show()
 
     worst_scuola_infanzia_rcc = select_scuole_infanzia_rcc.index[7]
     filter_isbs_rcc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == worst_scuola_infanzia_rcc
@@ -439,5 +514,7 @@ if __name__ == '__main__':
              horizontalalignment='center', color='black', weight='bold', size='large')
     fig.text(0.5, 0.935, worst_scuola_infanzia_rcc.replace('_', ' ').title(),
              horizontalalignment='center', color='black', size='large')
-    plt.show()
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
     pass
