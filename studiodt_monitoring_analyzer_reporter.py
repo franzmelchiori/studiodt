@@ -561,10 +561,7 @@ if __name__ == '__main__':
     # if TOGGLE_PLT_SHOW:
     #     plt.show()
     # plt.close()
-	# 	- chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
-	# 	- TODO | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) rilevazione 1 (y) e 2 (x)
-	# 	- TODO | next | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
-	# 	- TODO | next | chart | provincia | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
+	#   - chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     performance_circoli_rcc = []
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
@@ -609,3 +606,62 @@ if __name__ == '__main__':
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
+	#   - chart | provincia | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
+    def chart_scatter_performance_bimbi(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_06_scatter_performance'):
+        fig, ax = plt.subplots()
+        select_feat = LABELS_FEATURES + ['genitore_straniero', 'storia_coniglietto_bambino_seguito', 'storia_riccio_bambino_seguito']
+        filter_isna = dataframe_bimbi[select_feat].isnull().sum(axis=1) > 0
+        performance_cng = dataframe_bimbi.loc[filter_isna == False, LABELS_CNG_FEATURES].mean(axis=1)
+        performance_rcc = dataframe_bimbi.loc[filter_isna == False, LABELS_RCC_FEATURES].mean(axis=1)
+        filter_bimbi_stranieri = dataframe_bimbi.loc[filter_isna == False, 'genitore_straniero']
+        filter_bimbi_seguiti = dataframe_bimbi.loc[filter_isna == False, ['storia_coniglietto_bambino_seguito', 'storia_riccio_bambino_seguito']].sum(axis=1) > 0
+        filter_bimbi_no_stranieri_no_seguiti = (filter_bimbi_stranieri == False) & (filter_bimbi_seguiti == False)  # 1
+        filter_bimbi_solo_stranieri = (filter_bimbi_stranieri == True) & (filter_bimbi_seguiti == False)  # 2
+        filter_bimbi_solo_seguiti = (filter_bimbi_stranieri == False) & (filter_bimbi_seguiti == True)  # 3
+        filter_bimbi_stranieri_seguiti = (filter_bimbi_stranieri == True) & (filter_bimbi_seguiti == True)  # 4
+        categorie_bimbi = filter_bimbi_no_stranieri_no_seguiti*1 + \
+                          filter_bimbi_solo_stranieri*2 + \
+                          filter_bimbi_solo_seguiti*3 + \
+                          filter_bimbi_stranieri_seguiti*4
+        colors_categorie_bimbi = categorie_bimbi.map({1:'lightgreen', 2: 'limegreen', 3: 'orange', 4: 'lightcoral'})
+        labels_categorie_bimbi = categorie_bimbi.map({1:'no stranieri e no seguiti', 2: 'solo stranieri', 3: 'solo seguiti', 4: 'stranieri e seguiti'})
+        ax.scatter(performance_rcc[filter_bimbi_no_stranieri_no_seguiti], performance_cng[filter_bimbi_no_stranieri_no_seguiti],
+                   c=colors_categorie_bimbi[filter_bimbi_no_stranieri_no_seguiti], edgecolors='none', alpha=0.5, label='no stranieri e no seguiti')
+        ax.scatter(performance_rcc[filter_bimbi_solo_stranieri], performance_cng[filter_bimbi_solo_stranieri],
+                   c=colors_categorie_bimbi[filter_bimbi_solo_stranieri], edgecolors='none', alpha=0.5, label='solo stranieri')
+        ax.scatter(performance_rcc[filter_bimbi_solo_seguiti], performance_cng[filter_bimbi_solo_seguiti],
+                   c=colors_categorie_bimbi[filter_bimbi_solo_seguiti], edgecolors='none', alpha=0.5, label='solo seguiti')
+        ax.scatter(performance_rcc[filter_bimbi_stranieri_seguiti], performance_cng[filter_bimbi_stranieri_seguiti],
+                   c=colors_categorie_bimbi[filter_bimbi_stranieri_seguiti], edgecolors='none', alpha=0.5, label='stranieri e seguiti')
+        ax.set_xlim(0, 100)
+        ax.set_ylim(0, 100)
+        ax.set_xlabel('punteggio riccio')
+        ax.set_ylabel('punteggio coniglietto')
+        ax.legend(loc='upper left')
+        ax.spines.left.set_visible(False)
+        ax.spines.right.set_visible(False)
+        ax.spines.top.set_visible(False)
+        ax.spines.bottom.set_visible(False)
+        plt.title(title_prefix + 'StudioDT Protocollo 2024-25')
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    chart_scatter_performance_bimbi(dataframe_scuole_infanzia_2024_25,
+                                    'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_06b_provincia_scatter_performance_bimbi')
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
+	#   - chart | circoli | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
+	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
+	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
+    for numero_circolo in numeri_circoli:
+        filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
+        chart_scatter_performance_bimbi(dataframe_bimbi,
+                                        'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_06c_circolo_{}_scatter_performance_bimbi'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
