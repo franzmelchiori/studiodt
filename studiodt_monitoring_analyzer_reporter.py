@@ -24,8 +24,13 @@ from matplotlib.transforms import Affine2D
 from pat_studiodt_monitoraggio_scuole_infanzia import pat_studiodt_misurazione_2024_25 as pat_sdt_msr_24_25
 
 
+
+TOGGLE_FIG_SAVEFIG = True
+TOGGLE_PLT_SHOW = False
 BINS_NORM_METRIC = 20
 # NUMBER_SCHOOL_CHART = 20
+SWITCH_ANNOTATE_VLINES_04 = -2.5
+SWITCH_ANNOTATE_VLINES_05 = -4
 
 
 PATH_SCUOLE_INFANZIA = os.path.abspath('' + \
@@ -200,9 +205,6 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     pd.set_option('display.max_colwidth', None)
-
-    TOGGLE_FIG_SAVEFIG = True
-    TOGGLE_PLT_SHOW = False
 
     dataframe_scuole_infanzia_2024_25 = pat_sdt_msr_24_25.ScuoleInfanziaXLSX(
         pat_sdt_msr_24_25.PATH_SCUOLE_INFANZIA_MISURE_2024_25,
@@ -398,7 +400,7 @@ if False:
         ax.spines.bottom.set_visible(False)
         ax.legend()
         ax.vlines(eta_c.mean(), 0, 1, transform=ax.get_xaxis_transform(), color='blue', label=str(math.ceil(eta_c.mean())))
-        ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean(), 0))
+        ax.annotate(str(math.ceil(eta_c.mean())), (eta_c.mean()+SWITCH_ANNOTATE_VLINES_04, 0))
         ax.vlines(eta_r.mean(), 0, 1, transform=ax.get_xaxis_transform(), color='green', label=str(math.ceil(eta_c.mean())))
         ax.annotate(str(math.ceil(eta_r.mean())), (eta_r.mean(), 0))
         plt.title(title_prefix + 'Età bambini')
@@ -423,7 +425,7 @@ if False:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 5. rappresentazione metriche
 	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
@@ -439,6 +441,18 @@ if True:
             feature_rcc = dataframe_bimbi.loc[(filter_isna_rcc == False), label_feature_rcc]
             axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
             axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
+            if feature_cng.mean() <= feature_rcc.mean():
+                switch_annotate_vlines_cng = SWITCH_ANNOTATE_VLINES_05
+                switch_annotate_vlines_rcc = 0
+            else:
+                switch_annotate_vlines_cng = 0
+                switch_annotate_vlines_rcc = SWITCH_ANNOTATE_VLINES_05
+            if pd.isna(feature_cng.mean()) == False:
+                axs[id_feat].vlines(feature_cng.mean(), 0, 50, transform=axs[id_feat].get_xaxis_transform(), color='blue')
+                axs[id_feat].annotate(str(math.ceil(feature_cng.mean())), (feature_cng.mean()+switch_annotate_vlines_cng, 0))
+            if pd.isna(feature_rcc.mean()) == False:
+                axs[id_feat].vlines(feature_rcc.mean(), 0, 50, transform=axs[id_feat].get_xaxis_transform(), color='green')
+                axs[id_feat].annotate(str(math.ceil(feature_rcc.mean())), (feature_rcc.mean()+switch_annotate_vlines_rcc, 0))
             axs[id_feat].set_ylabel(label_feature, rotation='horizontal', ha='right')
             new_ticks = np.array([axs[id_feat].get_yticks()[-1]])
             axs[id_feat].set_yticks(new_ticks)
@@ -619,10 +633,10 @@ if False:
         axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
         axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
         if pd.isna(dataframe_bimbi_cng.mean()) == False:
-            axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, color='blue')
-            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean(), 0))
+            axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='blue')
+            axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean()+SWITCH_ANNOTATE_VLINES_05, 0))
         if pd.isna(dataframe_bimbi_rcc.mean()) == False:
-            axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, color='green')
+            axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='green')
             axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean(), 0))
         axs[id_circolo].set_ylabel('C{}'.format(numero_circolo), rotation='horizontal', ha='right')
         new_ticks = np.array([axs[id_circolo].get_yticks()[-1]])
@@ -644,9 +658,12 @@ if False:
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
+if True:
 	#   - chart | provincia | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
     def chart_scatter_performance_bimbi(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_06_scatter_performance'):
         fig, ax = plt.subplots()
+        ax.fill_between([0, 100], [0, 100], [100, 100],
+                        color='k', edgecolor='none', alpha=.05)
         select_feat = LABELS_FEATURES + ['genitore_straniero', 'storia_coniglietto_bambino_seguito', 'storia_riccio_bambino_seguito']
         filter_isna = dataframe_bimbi[select_feat].isnull().sum(axis=1) > 0
         performance_cng = dataframe_bimbi.loc[filter_isna == False, LABELS_CNG_FEATURES].mean(axis=1)
@@ -671,6 +688,9 @@ if False:
                    c=colors_categorie_bimbi[filter_bimbi_solo_seguiti], edgecolors='none', alpha=0.5, label='solo seguiti')
         ax.scatter(performance_rcc[filter_bimbi_stranieri_seguiti], performance_cng[filter_bimbi_stranieri_seguiti],
                    c=colors_categorie_bimbi[filter_bimbi_stranieri_seguiti], edgecolors='none', alpha=0.5, label='stranieri e seguiti')
+        numero_bambini_peggiorati = sum(performance_cng > performance_rcc)
+        percentuale_bambini_peggiorati = numero_bambini_peggiorati*100/len(performance_cng)
+        ax.annotate('{0} bambini peggiorati\n{1:1.2f} %'.format(numero_bambini_peggiorati, percentuale_bambini_peggiorati), (5, 50))
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
         ax.set_xlabel('punteggio riccio')
@@ -695,6 +715,7 @@ if False:
 	#   - chart | circoli | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
 	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
 	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
+if True:
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
