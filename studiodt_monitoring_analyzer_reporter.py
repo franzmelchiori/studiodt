@@ -219,7 +219,7 @@ if __name__ == '__main__':
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
-if False:
+if True:
 	# 1. rappresentazione territoriale
 	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
     dimensioni_circoli = []
@@ -278,7 +278,7 @@ if False:
         plt.show()
     plt.close()
 
-if False:
+if True:
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -328,7 +328,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | pie | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
     def chart_pie_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_pie_percentuale_bimbi_seguiti'):
@@ -381,7 +381,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
@@ -425,7 +425,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 5. rappresentazione metriche
 	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
@@ -578,7 +578,7 @@ if False:
     #     plt.show()
     # plt.close()
 
-if False:
+if True:
 	# 6. rappresentazione performance
 	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     # performance_scuole_infanzia_rcc = []
@@ -658,7 +658,6 @@ if False:
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-if True:
 	#   - chart | provincia | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
     def chart_scatter_performance_bimbi(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_06_scatter_performance'):
         fig, ax = plt.subplots()
@@ -715,7 +714,6 @@ if True:
 	#   - chart | circoli | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
 	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
 	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
-if True:
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
