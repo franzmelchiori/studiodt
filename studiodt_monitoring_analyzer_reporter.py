@@ -217,6 +217,7 @@ if __name__ == '__main__':
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
+if False:
 	# 1. rappresentazione territoriale
 	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
     dimensioni_circoli = []
@@ -226,10 +227,14 @@ if __name__ == '__main__':
         dimensioni_circoli.append([len(dataframe_scuola_infanzia), 'C{}'.format(numero_circolo)])
     dimensioni_circoli.sort()
     fig, ax = plt.subplots()
-    ax.pie([circolo[0] for circolo in dimensioni_circoli],
+    def func(pct, allvals):
+        absolute = int(np.round(pct/100.*np.sum(allvals)))
+        return f"{absolute:d}"
+    data = [circolo[0] for circolo in dimensioni_circoli]
+    ax.pie(data,
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_circoli))],
-           labels=[circolo[1] for circolo in dimensioni_circoli],
-           radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
+           labels=[circolo[1] for circolo in dimensioni_circoli], autopct=lambda pct: func(pct, data),
+           radius=1, wedgeprops=dict(width=0.3, edgecolor='w'), textprops={'fontsize': 7.5})
     plt.title('PAT | Bambini per circolo')
     if TOGGLE_FIG_SAVEFIG:
         fig.savefig(
@@ -248,12 +253,19 @@ if __name__ == '__main__':
         dimensioni_nomi_scuole.append([len(dataframe_scuola_infanzia), nome_scuola.replace('_', ' ').title()])
     dimensioni_nomi_scuole.sort()
     fig, ax = plt.subplots()
-    ax.pie([scuola[0] for scuola in dimensioni_nomi_scuole],
+    def func(pct, allvals):
+        absolute = int(np.round(pct/100.*np.sum(allvals)))
+        if absolute >= 20:
+            return f"{absolute:d}"
+        else:
+            return f""
+    data = [scuola[0] for scuola in dimensioni_nomi_scuole]
+    ax.pie(data,
            explode=[0 for scuola in dimensioni_nomi_scuole],
            colors=colormap_viridis[::int(len(colormap_viridis)/len(dimensioni_nomi_scuole))],
-           labels=[scuola[1] if scuola[0] >= 20 else '' for scuola in dimensioni_nomi_scuole],
-           rotatelabels=True, radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
-    plt.title('PAT | Scuole con almeno 20 bambini')
+           labels=[scuola[1] if scuola[0] >= 20 else '' for scuola in dimensioni_nomi_scuole], autopct=lambda pct: func(pct, data),
+           rotatelabels=True, radius=1, wedgeprops=dict(width=0.3, edgecolor='w'), textprops={'fontsize': 5})
+    plt.title('PAT | Bambini per scuola')
     if TOGGLE_FIG_SAVEFIG:
         fig.savefig(
             os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
@@ -264,6 +276,7 @@ if __name__ == '__main__':
         plt.show()
     plt.close()
 
+if False:
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -275,10 +288,20 @@ if __name__ == '__main__':
         filter_isf = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'f') & (dataframe_bimbi['genitore_straniero'] == False)
         filter_isf_gs = (filter_isna == False) & (dataframe_bimbi['m_f'] == 'f') & (dataframe_bimbi['genitore_straniero'])
         fig, ax = plt.subplots()
-        ax.pie([sum(filter_ism_gs), sum(filter_ism), sum(filter_isna), sum(filter_isf), sum(filter_isf_gs)],
-            colors = ['lightblue', 'lightblue', 'lightgrey', 'lightpink', 'lightpink'],
-            hatch = ['..', '', '', '', '..'],
-            labels=['M straniero', 'M', 'nd', 'F', 'F straniera'],
+        def func(pct, allvals):
+            absolute = int(np.round(pct/100.*np.sum(allvals)))
+            if absolute != 0:
+                return f"{pct:1.0f} %"
+            else:
+                return f""
+        if sum(filter_isna) != 0:
+            labels=['M straniero', 'M', 'nd', 'F', 'F straniera']
+        else:
+            labels=['M straniero', 'M', '', 'F', 'F straniera']
+        data = [sum(filter_ism_gs), sum(filter_ism), sum(filter_isna), sum(filter_isf), sum(filter_isf_gs)]
+        ax.pie(data,
+            colors = ['lightblue', 'lightblue', 'lightgrey', 'lightpink', 'lightpink'], hatch = ['..', '', '', '', '..'],
+            labels=labels, autopct=lambda pct: func(pct, data),
             radius=1, wedgeprops=dict(width=0.3, edgecolor='w'))
         plt.title(title_prefix + 'Bambini per genere')
         if toggle_fig_savefig:
@@ -303,6 +326,7 @@ if __name__ == '__main__':
             plt.show()
         plt.close()
 
+if False:
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | pie | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
     def chart_pie_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_pie_percentuale_bimbi_seguiti'):
@@ -313,15 +337,26 @@ if __name__ == '__main__':
         filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
         filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
         fig, ax = plt.subplots()
+        if (sum(filter_isna_cs) != 0) | (sum(filter_isna_rs) != 0):
+            labels=['seguito', 'non seguito', 'nd']
+        else:
+            labels=['seguito', 'non seguito', '']
         ax.pie([sum(filter_isrs), sum(filter_isr), sum(filter_isna_rs)],
-            colors = ['orange', 'lightgreen', 'lightgrey'],
-            labels=['riccio seguito', 'non seguito', 'nd'],
+            colors = ['orange', 'lightgreen', 'lightgrey'], hatch = ['..', '..', '..'],
+            labels=labels,
             radius=1, wedgeprops=dict(width=0.15, edgecolor='w'))
-        ax.pie([sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)],
+        def func(pct, allvals):
+            absolute = int(np.round(pct/100.*np.sum(allvals)))
+            if absolute != 0:
+                return f"{pct:1.0f} %"
+            else:
+                return f""
+        data = [sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)]
+        ax.pie(data,
             colors = ['orange', 'lightgreen', 'lightgrey'],
-            labels=['coniglietto seguito', '', ''],
+            labels=['', '', ''], autopct=lambda pct: func(pct, data),
             radius=1-0.15, wedgeprops=dict(width=0.15, edgecolor='w'))
-        plt.title(title_prefix + 'Bambini seguiti')
+        plt.title(title_prefix + 'Bambini seguiti prima e dopo')
         if toggle_fig_savefig:
             fig.savefig(
                 os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
@@ -344,6 +379,7 @@ if __name__ == '__main__':
             plt.show()
         plt.close()
 
+if False:
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
@@ -387,6 +423,7 @@ if __name__ == '__main__':
             plt.show()
         plt.close()
 
+if True:
 	# 5. rappresentazione metriche
 	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
@@ -527,6 +564,7 @@ if __name__ == '__main__':
     #     plt.show()
     # plt.close()
 
+if False:
 	# 6. rappresentazione performance
 	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     # performance_scuole_infanzia_rcc = []
