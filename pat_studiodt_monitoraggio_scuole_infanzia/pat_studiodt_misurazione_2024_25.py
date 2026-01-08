@@ -224,6 +224,23 @@ MAP_NOME_SCUOLA_FILE_CIRCOLO = {
     'ZUCLO_BOLBENO': 8}
 
 
+MAP_ID_CIRCOLO_NOME = {
+    1: 'C1',
+    2: 'C2',
+    3: 'C3',
+    4: 'C4',
+    5: 'C5',
+    6: 'C6',
+    7: 'C7',
+    8: 'C8',
+    9: 'C9',
+    10: 'C10',
+    11: 'C11',
+    12: 'CF',
+    13: 'CL',
+}
+
+
 class ScuolaInfanziaXLSX:
 
     def __init__(self, name_abspath_xlsx_file, dict_studiodt_experiment_design, toggle_check_read=False):

@@ -226,7 +226,7 @@ if True:
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_scuola_infanzia = dataframe_scuole_infanzia_2024_25[filter_club]
-        dimensioni_circoli.append([len(dataframe_scuola_infanzia), 'C{}'.format(numero_circolo)])
+        dimensioni_circoli.append([len(dataframe_scuola_infanzia), '{}'.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo])])
     dimensioni_circoli.sort()
     fig, ax = plt.subplots()
     def func(pct, allvals):
@@ -323,7 +323,7 @@ if True:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_pie_bimbi_genere_provenienza(dataframe_bimbi,
-                                           'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_02b_circolo_{}_pie_percentuale_bimbi_genere_provenienza'.format(numero_circolo))
+                                           '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_02b_circolo_{}_pie_percentuale_bimbi_genere_provenienza'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -376,7 +376,7 @@ if True:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_pie_bimbi_seguiti(dataframe_bimbi,
-                                'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_03b_circolo_{}_pie_percentuale_bimbi_seguiti'.format(numero_circolo))
+                                '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_03b_circolo_{}_pie_percentuale_bimbi_seguiti'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -420,7 +420,7 @@ if True:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_hist_bimbi_eta(dataframe_bimbi,
-                             'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_04b_circolo_{}_hist_distribuzione_bimbi_eta'.format(numero_circolo))
+                             '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_04b_circolo_{}_hist_distribuzione_bimbi_eta'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -481,7 +481,7 @@ if True:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_hist_distribuzioni_metriche(dataframe_bimbi,
-                                          'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_05b_circolo_{}_hist_distribuzioni_metriche'.format(numero_circolo))
+                                          '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_05b_circolo_{}_hist_distribuzioni_metriche'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -638,7 +638,7 @@ if True:
         if pd.isna(dataframe_bimbi_rcc.mean()) == False:
             axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='green')
             axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean(), 0))
-        axs[id_circolo].set_ylabel('C{}'.format(numero_circolo), rotation='horizontal', ha='right')
+        axs[id_circolo].set_ylabel('{}'.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), rotation='horizontal', ha='right')
         new_ticks = np.array([axs[id_circolo].get_yticks()[-1]])
         axs[id_circolo].set_yticks(new_ticks)
         if id_circolo == 0:
@@ -677,7 +677,7 @@ if True:
                           filter_bimbi_solo_stranieri*2 + \
                           filter_bimbi_solo_seguiti*3 + \
                           filter_bimbi_stranieri_seguiti*4
-        colors_categorie_bimbi = categorie_bimbi.map({1:'lightgreen', 2: 'limegreen', 3: 'orange', 4: 'lightcoral'})
+        colors_categorie_bimbi = categorie_bimbi.map({1:'lightskyblue', 2: 'limegreen', 3: 'orange', 4: 'lightcoral'})
         labels_categorie_bimbi = categorie_bimbi.map({1:'no stranieri e no seguiti', 2: 'solo stranieri', 3: 'solo seguiti', 4: 'stranieri e seguiti'})
         ax.scatter(performance_rcc[filter_bimbi_no_stranieri_no_seguiti], performance_cng[filter_bimbi_no_stranieri_no_seguiti],
                    c=colors_categorie_bimbi[filter_bimbi_no_stranieri_no_seguiti], edgecolors='none', alpha=0.5, label='no stranieri e no seguiti')
@@ -692,8 +692,8 @@ if True:
         ax.annotate('{0} bambini peggiorati\n{1:1.2f} %'.format(numero_bambini_peggiorati, percentuale_bambini_peggiorati), (5, 50))
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
-        ax.set_xlabel('punteggio riccio')
-        ax.set_ylabel('punteggio coniglietto')
+        ax.set_xlabel('punteggio maggio')
+        ax.set_ylabel('punteggio ottobre')
         ax.legend(loc='upper left')
         ax.spines.left.set_visible(False)
         ax.spines.right.set_visible(False)
@@ -718,7 +718,7 @@ if True:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_scatter_performance_bimbi(dataframe_bimbi,
-                                        'C{} | '.format(numero_circolo), TOGGLE_FIG_SAVEFIG, 'chart_06c_circolo_{}_scatter_performance_bimbi'.format(numero_circolo))
+                                        '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_06c_circolo_{}_scatter_performance_bimbi'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
