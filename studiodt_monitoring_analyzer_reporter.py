@@ -219,7 +219,7 @@ if __name__ == '__main__':
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
-if True:
+if False:
 	# 1. rappresentazione territoriale
 	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
     dimensioni_circoli = []
@@ -278,7 +278,7 @@ if True:
         plt.show()
     plt.close()
 
-if True:
+if False:
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -330,58 +330,63 @@ if True:
 
 if True:
 	# 3. rappresentazione sostegno
-	# 	- chart | provincia | pie | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
-    def chart_pie_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_pie_percentuale_bimbi_seguiti'):
+	# 	- chart | provincia | bar | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
+    def chart_bar_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_bar_percentuale_bimbi_seguiti'):
         filter_isna_cs = dataframe_bimbi['storia_coniglietto_bambino_seguito'].isna()
         filter_isna_rs = dataframe_bimbi['storia_riccio_bambino_seguito'].isna()
         filter_iscs = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'])
         filter_isc = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'] == False)
         filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
         filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
-        fig, ax = plt.subplots()
+        label_rilevazioni = ('coniglietto', 'riccio')
+        data_rilevazioni_seguiti = {
+            'seguito': np.array([sum(filter_iscs), sum(filter_isrs)]),
+            'non seguito': np.array([sum(filter_isc), sum(filter_isr)])}
+        color_rilevazioni_seguiti = {
+            'seguito': 'orange',
+            'non seguito': 'lightgreen'}
         if (sum(filter_isna_cs) != 0) | (sum(filter_isna_rs) != 0):
-            labels=['seguito', 'non seguito', 'nd']
-        else:
-            labels=['seguito', 'non seguito', '']
-        ax.pie([sum(filter_isrs), sum(filter_isr), sum(filter_isna_rs)],
-            colors = ['orange', 'lightgreen', 'lightgrey'], hatch = ['..', '..', '..'],
-            labels=labels,
-            radius=1, wedgeprops=dict(width=0.15, edgecolor='w'))
-        def func(pct, allvals):
-            absolute = int(np.round(pct/100.*np.sum(allvals)))
-            if absolute != 0:
-                return f"{pct:1.0f} %"
-            else:
-                return f""
-        data = [sum(filter_iscs), sum(filter_isc), sum(filter_isna_cs)]
-        ax.pie(data,
-            colors = ['orange', 'lightgreen', 'lightgrey'],
-            labels=['', '', ''], autopct=lambda pct: func(pct, data),
-            radius=1-0.15, wedgeprops=dict(width=0.15, edgecolor='w'))
-        plt.title(title_prefix + 'Bambini seguiti prima e dopo')
+            data_rilevazioni_seguiti['nd'] = np.array([sum(filter_isna_cs), sum(filter_isna_rs)])
+            color_rilevazioni_seguiti['nd'] = 'lightgrey'
+        # def func(pct, allvals):
+        #     absolute = int(np.round(pct/100.*np.sum(allvals)))
+        #     if absolute != 0:
+        #         return f"{pct:1.0f} %"
+        #     else:
+        #         return f""
+        fig, ax = plt.subplots()
+        bottom = np.zeros(2)
+        for type_seguiti, data_seguiti in data_rilevazioni_seguiti.items():
+            p = ax.bar(label_rilevazioni, data_seguiti, bottom=bottom,
+                       label=type_seguiti, color=color_rilevazioni_seguiti[type_seguiti])
+            bottom += data_seguiti
+            ax.bar_label(p, label_type='center')
+        ax.legend()
+        plt.title(title_prefix + 'Bambini seguiti')
         if toggle_fig_savefig:
             fig.savefig(
                 os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
                                 FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
                                 filename_suffix),
                 dpi=300, bbox_inches='tight', pad_inches=0.25)
-    chart_pie_bimbi_seguiti(dataframe_scuole_infanzia_2024_25,
-                            'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_03a_provincia_pie_percentuale_bimbi_seguiti')
+    chart_bar_bimbi_seguiti(dataframe_scuole_infanzia_2024_25,
+                            'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_03a_provincia_bar_percentuale_bimbi_seguiti')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-    # 	- chart | circoli | pie | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
+if False:
+    # 	- chart | circoli | bar | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
 	# 	- TODO | next | chart | circoli | hist | numero bimbi seguiti nei circoli dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti fra circoli?
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
-        chart_pie_bimbi_seguiti(dataframe_bimbi,
-                                '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_03b_circolo_{}_pie_percentuale_bimbi_seguiti'.format(numero_circolo))
+        chart_bar_bimbi_seguiti(dataframe_bimbi,
+                                '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_03b_circolo_{}_bar_percentuale_bimbi_seguiti'.format(numero_circolo))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
@@ -425,7 +430,7 @@ if True:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 5. rappresentazione metriche
 	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
@@ -578,7 +583,7 @@ if True:
     #     plt.show()
     # plt.close()
 
-if True:
+if False:
 	# 6. rappresentazione performance
 	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     # performance_scuole_infanzia_rcc = []
