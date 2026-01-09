@@ -470,7 +470,7 @@ if True:
                 axs[id_feat].set_title(title_prefix + 'StudioDT Protocollo 2024-25')
             if id_feat == ids_features[-1]:
                 axs[id_feat].legend(loc='lower left')
-                axs[id_feat].set_xlabel('media punteggio metrica')
+                axs[id_feat].set_xlabel('punteggio metrica')
             axs[id_feat].spines.right.set_visible(False)
             axs[id_feat].spines.top.set_visible(False)
             axs[id_feat].spines.bottom.set_visible(False)
