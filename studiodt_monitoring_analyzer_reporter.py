@@ -328,7 +328,7 @@ if False:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | bar | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
     def chart_bar_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_bar_percentuale_bimbi_seguiti'):
@@ -338,43 +338,36 @@ if True:
         filter_isc = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'] == False)
         filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
         filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
-
         label_rilevazioni = ['coniglietto', 'riccio']
         label_type_seguiti = ['seguiti', 'non seguiti']
         data_rilevazioni_seguiti = [[sum(filter_iscs), sum(filter_isc)],
                                     [sum(filter_isrs), sum(filter_isr)]]
-        color_rilevazioni_seguiti = ['orange', 'lightgreen']
+        color_rilevazioni_seguiti = ['orange', 'limegreen']
         if (sum(filter_isna_cs) != 0) | (sum(filter_isna_rs) != 0):
             label_type_seguiti.append('nd')
             data_rilevazioni_seguiti[0].append(sum(filter_isna_cs))
             data_rilevazioni_seguiti[1].append(sum(filter_isna_rs))
             color_rilevazioni_seguiti.append('lightgrey')
-        data_rilevazioni_seguiti = np.array(data_rilevazioni_seguiti)
+        data_rilevazioni_seguiti = np.array(data_rilevazioni_seguiti, dtype=float)
+        data_rilevazioni_seguiti[0] = data_rilevazioni_seguiti[0]*100/data_rilevazioni_seguiti.sum(axis=1)[0]
+        data_rilevazioni_seguiti[1] = data_rilevazioni_seguiti[1]*100/data_rilevazioni_seguiti.sum(axis=1)[1]
         data_rilevazioni_seguiti_cum = data_rilevazioni_seguiti.cumsum(axis=1)
-
-        # def func(pct, allvals):
-        #     absolute = int(np.round(pct/100.*np.sum(allvals)))
-        #     if absolute != 0:
-        #         return f"{pct:1.0f} %"
-        #     else:
-        #         return f""
-
         fig, ax = plt.subplots()
         ax.invert_yaxis()
         ax.xaxis.set_visible(False)
-
         for i, (colname, color) in enumerate(zip(label_type_seguiti, color_rilevazioni_seguiti)):
             widths = data_rilevazioni_seguiti[:, i]
             starts = data_rilevazioni_seguiti_cum[:, i] - widths
-            rects = ax.barh(label_rilevazioni, widths, left=starts, height=0.1,
-                            label=colname, color=color)
-            ax.bar_label(rects, label_type='center')
-
-        # ax.spines.left.set_visible(False)
+            rects = ax.barh(label_rilevazioni, widths, left=starts, height=.95,
+                            label=colname, color=color, alpha=.5)
+            ax.bar_label(rects, fmt='%1.0f%%', label_type='center')
+        ax.spines.left.set_visible(False)
         ax.spines.right.set_visible(False)
         ax.spines.top.set_visible(False)
         ax.spines.bottom.set_visible(False)
-        ax.legend(ncols=len(label_type_seguiti), loc='lower center')
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0 + box.height * .09, box.width, box.height * .09])
+        ax.legend(ncols=len(label_type_seguiti), loc='upper center', bbox_to_anchor=(.5, -.05))
         plt.title(title_prefix + 'Bambini seguiti')
         if toggle_fig_savefig:
             fig.savefig(
@@ -387,7 +380,6 @@ if True:
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
-if False:
     # 	- chart | circoli | bar | numero bimbi seguiti nel circolo dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti nei circoli?
 	# 	- TODO | next | chart | circoli | hist | numero bimbi seguiti nei circoli dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti fra circoli?
     for numero_circolo in numeri_circoli:
