@@ -532,7 +532,7 @@ if True:
                 axs[id_circolo].set_title(title_prefix + 'StudioDT Protocollo 2024-25')
             if id_circolo == list_id_circoli[-1]:
                 axs[id_circolo].legend(loc='lower left')
-                axs[id_circolo].set_xlabel('media punteggi metriche')
+                axs[id_circolo].set_xlabel('punteggio metrica')
             axs[id_circolo].spines.right.set_visible(False)
             axs[id_circolo].spines.top.set_visible(False)
             axs[id_circolo].spines.bottom.set_visible(False)
