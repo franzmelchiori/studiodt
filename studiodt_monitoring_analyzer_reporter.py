@@ -219,7 +219,7 @@ if __name__ == '__main__':
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
-if False:
+if True:
 	# 1. rappresentazione territoriale
 	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
     dimensioni_circoli = []
@@ -278,7 +278,7 @@ if False:
         plt.show()
     plt.close()
 
-if False:
+if True:
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -328,7 +328,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | bar | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
     def chart_bar_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_bar_percentuale_bimbi_seguiti'):
@@ -391,7 +391,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
@@ -435,7 +435,7 @@ if False:
             plt.show()
         plt.close()
 
-if False:
+if True:
 	# 5. rappresentazione metriche
 	# 	- chart | provincia | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2 | ci sono metriche che piu' marcatamente cambiano (in meglio o in peggio)?
     def chart_hist_distribuzioni_metriche(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05_hist_distribuzioni_metriche'):
@@ -486,12 +486,68 @@ if False:
         plt.show()
     plt.close()
 	# 	- chart | circoli | hist | distribuzioni dei bimbi per ogni metrica, rilevazione 1 e 2
-	# 	- TODO | next | chart | circoli | boxplot | distribuzioni metriche rilevazione 1 e 2 nei circoli
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
         chart_hist_distribuzioni_metriche(dataframe_bimbi,
                                           '{} | '.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), TOGGLE_FIG_SAVEFIG, 'chart_05b_circolo_{}_hist_distribuzioni_metriche'.format(numero_circolo))
+        if TOGGLE_PLT_SHOW:
+            plt.show()
+        plt.close()
+	# 	- chart | metriche | hist | distribuzioni dei bimbi per ogni circolo, rilevazione 1 e 2
+	# 	- TODO | next | chart | circoli | boxplot | distribuzioni metriche rilevazione 1 e 2 nei circoli
+    def chart_hist_distribuzione_metrica(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_05c_hist_distribuzione_metrica'):
+        metrica_circoli_rcc = []
+        for numero_circolo in numeri_circoli:
+            filter_club = dataframe_bimbi['numero_circolo'] == numero_circolo
+            metrica_circoli_rcc.append(dataframe_bimbi.loc[filter_club].iloc[:, -1].mean())
+        series_metrica_circoli_rcc = pd.Series(metrica_circoli_rcc, index=numeri_circoli).sort_values(ascending=False)
+        fig, axs = plt.subplots(len(numeri_circoli), 1)
+        list_id_circoli = list(range(len(series_metrica_circoli_rcc)))
+        for id_circolo in list_id_circoli:
+            numero_circolo = series_metrica_circoli_rcc.index[id_circolo]
+            filter_club = dataframe_bimbi['numero_circolo'] == numero_circolo
+            dataframe_bimbi_cng = dataframe_bimbi.loc[filter_club].iloc[:, 1]
+            dataframe_bimbi_rcc = dataframe_bimbi.loc[filter_club].iloc[:, 2]
+            filter_isna_cng = dataframe_bimbi_cng.loc[filter_club].isna()
+            filter_isna_rcc = dataframe_bimbi_rcc.loc[filter_club].isna()
+            axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
+            axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
+            if dataframe_bimbi_cng.mean() <= dataframe_bimbi_rcc.mean():
+                switch_annotate_vlines_cng = SWITCH_ANNOTATE_VLINES_05
+                switch_annotate_vlines_rcc = 0
+            else:
+                switch_annotate_vlines_cng = 0
+                switch_annotate_vlines_rcc = SWITCH_ANNOTATE_VLINES_05
+            if pd.isna(dataframe_bimbi_cng.mean()) == False:
+                axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='blue')
+                axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean()+switch_annotate_vlines_cng, 0))
+            if pd.isna(dataframe_bimbi_rcc.mean()) == False:
+                axs[id_circolo].vlines(dataframe_bimbi_rcc.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='green')
+                axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_rcc.mean())), (dataframe_bimbi_rcc.mean()+switch_annotate_vlines_rcc, 0))
+            axs[id_circolo].set_ylabel('{}'.format(pat_sdt_msr_24_25.MAP_ID_CIRCOLO_NOME[numero_circolo]), rotation='horizontal', ha='right')
+            new_ticks = np.array([axs[id_circolo].get_yticks()[-1]])
+            axs[id_circolo].set_yticks(new_ticks)
+            if id_circolo == 0:
+                axs[id_circolo].set_title(title_prefix + 'StudioDT Protocollo 2024-25')
+            if id_circolo == list_id_circoli[-1]:
+                axs[id_circolo].legend(loc='lower left')
+                axs[id_circolo].set_xlabel('media punteggi metriche')
+            axs[id_circolo].spines.right.set_visible(False)
+            axs[id_circolo].spines.top.set_visible(False)
+            axs[id_circolo].spines.bottom.set_visible(False)
+        if toggle_fig_savefig:
+            fig.savefig(
+                os.path.abspath(PATH_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
+                                filename_suffix),
+                dpi=300, bbox_inches='tight', pad_inches=0.25)
+    ids_features = list(range(len(LABELS_CNG_FEATURES)))
+    for id_feat in ids_features:
+        dataframe_bimbi = dataframe_scuole_infanzia_2024_25[['numero_circolo', LABELS_CNG_FEATURES[id_feat], LABELS_RCC_FEATURES[id_feat]]]
+        chart_hist_distribuzione_metrica(dataframe_bimbi,
+                                         'PAT | {} | '.format(LABELS_CNG_FEATURES[id_feat].removeprefix('storia_coniglietto_').replace('_', ' ')),
+                                         TOGGLE_FIG_SAVEFIG, 'chart_05c_metrica_{}_hist_distribuzione_metrica'.format(id_feat))
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
@@ -588,7 +644,7 @@ if False:
     #     plt.show()
     # plt.close()
 
-if False:
+if True:
 	# 6. rappresentazione performance
 	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     # performance_scuole_infanzia_rcc = []
