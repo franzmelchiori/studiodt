@@ -338,30 +338,43 @@ if True:
         filter_isc = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'] == False)
         filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
         filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
-        label_rilevazioni = ('coniglietto', 'riccio')
-        data_rilevazioni_seguiti = {
-            'seguito': np.array([sum(filter_iscs), sum(filter_isrs)]),
-            'non seguito': np.array([sum(filter_isc), sum(filter_isr)])}
-        color_rilevazioni_seguiti = {
-            'seguito': 'orange',
-            'non seguito': 'lightgreen'}
+
+        label_rilevazioni = ['coniglietto', 'riccio']
+        label_type_seguiti = ['seguiti', 'non seguiti']
+        data_rilevazioni_seguiti = [[sum(filter_iscs), sum(filter_isc)],
+                                    [sum(filter_isrs), sum(filter_isr)]]
+        color_rilevazioni_seguiti = ['orange', 'lightgreen']
         if (sum(filter_isna_cs) != 0) | (sum(filter_isna_rs) != 0):
-            data_rilevazioni_seguiti['nd'] = np.array([sum(filter_isna_cs), sum(filter_isna_rs)])
-            color_rilevazioni_seguiti['nd'] = 'lightgrey'
+            label_type_seguiti.append('nd')
+            data_rilevazioni_seguiti[0].append(sum(filter_isna_cs))
+            data_rilevazioni_seguiti[1].append(sum(filter_isna_rs))
+            color_rilevazioni_seguiti.append('lightgrey')
+        data_rilevazioni_seguiti = np.array(data_rilevazioni_seguiti)
+        data_rilevazioni_seguiti_cum = data_rilevazioni_seguiti.cumsum(axis=1)
+
         # def func(pct, allvals):
         #     absolute = int(np.round(pct/100.*np.sum(allvals)))
         #     if absolute != 0:
         #         return f"{pct:1.0f} %"
         #     else:
         #         return f""
+
         fig, ax = plt.subplots()
-        bottom = np.zeros(2)
-        for type_seguiti, data_seguiti in data_rilevazioni_seguiti.items():
-            p = ax.bar(label_rilevazioni, data_seguiti, bottom=bottom,
-                       label=type_seguiti, color=color_rilevazioni_seguiti[type_seguiti])
-            bottom += data_seguiti
-            ax.bar_label(p, label_type='center')
-        ax.legend()
+        ax.invert_yaxis()
+        ax.xaxis.set_visible(False)
+
+        for i, (colname, color) in enumerate(zip(label_type_seguiti, color_rilevazioni_seguiti)):
+            widths = data_rilevazioni_seguiti[:, i]
+            starts = data_rilevazioni_seguiti_cum[:, i] - widths
+            rects = ax.barh(label_rilevazioni, widths, left=starts, height=0.1,
+                            label=colname, color=color)
+            ax.bar_label(rects, label_type='center')
+
+        # ax.spines.left.set_visible(False)
+        ax.spines.right.set_visible(False)
+        ax.spines.top.set_visible(False)
+        ax.spines.bottom.set_visible(False)
+        ax.legend(ncols=len(label_type_seguiti), loc='lower center')
         plt.title(title_prefix + 'Bambini seguiti')
         if toggle_fig_savefig:
             fig.savefig(
