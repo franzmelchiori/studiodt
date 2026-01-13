@@ -646,40 +646,7 @@ if True:
 
 if True:
 	# 6. rappresentazione performance
-	# 	- deprecated | chart | scuole migliori e peggiori | hist | performance scuole migliori e peggiori rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
-    # performance_scuole_infanzia_rcc = []
-    # for nome_scuola in nomi_scuole:
-    #     filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
-    #     performance_scuole_infanzia_rcc.append(dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1).mean())
-    # series_performance_scuole_infanzia_rcc = pd.Series(performance_scuole_infanzia_rcc, index=nomi_scuole).sort_values(ascending=False)
-    # best_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[:int(NUMBER_SCHOOL_CHART/2)]
-    # worst_scuole_infanzia_rcc = series_performance_scuole_infanzia_rcc[-int(NUMBER_SCHOOL_CHART/2):]
-    # select_scuole_infanzia_rcc = pd.concat([best_scuole_infanzia_rcc, worst_scuole_infanzia_rcc])
-    # id_scuola = 0
-    # fig, axs = plt.subplots(len(select_scuole_infanzia_rcc), 1)
-    # for nome_scuola in select_scuole_infanzia_rcc.index:
-    #     filter_issc = dataframe_scuole_infanzia_2024_25['nome_scuola_file'] == nome_scuola
-    #     dataframe_scuola_infanzia_cng = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_CNG_FEATURES].mean(axis=1)
-    #     dataframe_scuola_infanzia_rcc = dataframe_scuole_infanzia_2024_25.loc[filter_issc, LABELS_RCC_FEATURES].mean(axis=1)
-    #     filter_isna_cng = dataframe_scuola_infanzia_cng.isna()
-    #     filter_isna_rcc = dataframe_scuola_infanzia_rcc.isna()
-    #     axs[id_scuola].hist(dataframe_scuola_infanzia_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='coniglietto [media metriche]', color='blue', alpha=0.5)
-    #     axs[id_scuola].hist(dataframe_scuola_infanzia_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=[0, pat_sdt_msr_24_25.MAX_NORM_METRIC], label='riccio [media metriche]', color='green', alpha=0.5)
-    #     if pd.isna(dataframe_scuola_infanzia_cng.mean()) == False:
-    #         axs[id_scuola].vlines(dataframe_scuola_infanzia_cng.mean(), 0, 10, color='blue')
-    #         axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_cng.mean())), (dataframe_scuola_infanzia_cng.mean(), 10))
-    #     if pd.isna(dataframe_scuola_infanzia_rcc.mean()) == False:
-    #         axs[id_scuola].vlines(dataframe_scuola_infanzia_rcc.mean(), 0, 10, color='green')
-    #         axs[id_scuola].annotate(str(math.ceil(dataframe_scuola_infanzia_rcc.mean())), (dataframe_scuola_infanzia_rcc.mean(), 10))
-    #     if id_scuola == 0:
-    #         axs[id_scuola].legend()
-    #         axs[id_scuola].set_title('StudioDT Protocollo 2024-25 [0-100]')
-    #     axs[id_scuola].set_ylabel(nome_scuola.title().replace('_', ' '), rotation='horizontal', ha='right')
-    #     id_scuola += 1
-    # if TOGGLE_PLT_SHOW:
-    #     plt.show()
-    # plt.close()
-	#   - chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
+	# 	- chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     performance_circoli_rcc = []
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
@@ -778,8 +745,6 @@ if True:
         plt.show()
     plt.close()
 	#   - chart | circoli | scatter | performance bimbi (colore diverso per stranieri e seguiti) rilevazione 1 (y) e 2 (x)
-	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) stranieri (%) rilevazione 1 (y) e 2 (x)
-	#   - TODO | next | chart | circoli | scatter | performance circoli (colore e diametro dal numero dei bimbi) seguiti (%) rilevazione 1 (y) e 2 (x)
     for numero_circolo in numeri_circoli:
         filter_club = dataframe_scuole_infanzia_2024_25['numero_circolo'] == numero_circolo
         dataframe_bimbi = dataframe_scuole_infanzia_2024_25[filter_club]
