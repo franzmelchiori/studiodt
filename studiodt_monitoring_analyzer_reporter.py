@@ -1,4 +1,4 @@
-""" 
+"""
     StudioDT
     Monitoring analyzer and reporter
     Francesco Melchiori, 2025
@@ -338,7 +338,7 @@ if True:
         filter_isc = (filter_isna_cs == False) & (dataframe_bimbi['storia_coniglietto_bambino_seguito'] == False)
         filter_isrs = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'])
         filter_isr = (filter_isna_rs == False) & (dataframe_bimbi['storia_riccio_bambino_seguito'] == False)
-        label_rilevazioni = ['coniglietto', 'riccio']
+        label_rilevazioni = ['ottobre', 'maggio']
         label_type_seguiti = ['seguiti', 'non seguiti']
         data_rilevazioni_seguiti = [[sum(filter_iscs), sum(filter_isc)],
                                     [sum(filter_isrs), sum(filter_isr)]]
@@ -400,8 +400,8 @@ if True:
         eta_c = dataframe_bimbi.loc[(filter_isna_ce == False), 'storia_coniglietto_eta']
         eta_r = dataframe_bimbi.loc[(filter_isna_re == False), 'storia_riccio_eta']
         fig, ax = plt.subplots()
-        ax.hist(eta_c, bins=60, range=(40, 100), label='coniglietto', color='blue', alpha=0.5)
-        ax.hist(eta_r, bins=60, range=(40, 100), label='riccio', color='green', alpha=0.5)
+        ax.hist(eta_c, bins=60, range=(40, 100), label='ottobre', color='blue', alpha=0.5)
+        ax.hist(eta_r, bins=60, range=(40, 100), label='maggio', color='green', alpha=0.5)
         ax.set_xlabel('mesi')
         ax.set_ylabel('numero bambini')
         ax.spines.left.set_visible(False)
@@ -449,8 +449,8 @@ if True:
             filter_isna_rcc = dataframe_bimbi[label_feature_rcc].isna()
             feature_cng = dataframe_bimbi.loc[(filter_isna_cng == False), label_feature_cng]
             feature_rcc = dataframe_bimbi.loc[(filter_isna_rcc == False), label_feature_rcc]
-            axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
-            axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
+            axs[id_feat].hist(feature_cng, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='ottobre', color='blue', alpha=0.5)
+            axs[id_feat].hist(feature_rcc, bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='maggio', color='green', alpha=0.5)
             if feature_cng.mean() <= feature_rcc.mean():
                 switch_annotate_vlines_cng = SWITCH_ANNOTATE_VLINES_05
                 switch_annotate_vlines_rcc = 0
@@ -511,8 +511,8 @@ if True:
             dataframe_bimbi_rcc = dataframe_bimbi.loc[filter_club].iloc[:, 2]
             filter_isna_cng = dataframe_bimbi_cng.loc[filter_club].isna()
             filter_isna_rcc = dataframe_bimbi_rcc.loc[filter_club].isna()
-            axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
-            axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
+            axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='ottobre', color='blue', alpha=0.5)
+            axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='maggio', color='green', alpha=0.5)
             if dataframe_bimbi_cng.mean() <= dataframe_bimbi_rcc.mean():
                 switch_annotate_vlines_cng = SWITCH_ANNOTATE_VLINES_05
                 switch_annotate_vlines_rcc = 0
@@ -663,8 +663,8 @@ if True:
         dataframe_bimbi_rcc = dataframe_bimbi.loc[filter_club, LABELS_RCC_FEATURES].mean(axis=1)
         filter_isna_cng = dataframe_bimbi_cng.isna()
         filter_isna_rcc = dataframe_bimbi_rcc.isna()
-        axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='coniglietto', color='blue', alpha=0.5)
-        axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='riccio', color='green', alpha=0.5)
+        axs[id_circolo].hist(dataframe_bimbi_cng.loc[filter_isna_cng == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='ottobre', color='blue', alpha=0.5)
+        axs[id_circolo].hist(dataframe_bimbi_rcc.loc[filter_isna_rcc == False], bins=BINS_NORM_METRIC, range=(0, pat_sdt_msr_24_25.MAX_NORM_METRIC), label='maggio', color='green', alpha=0.5)
         if pd.isna(dataframe_bimbi_cng.mean()) == False:
             axs[id_circolo].vlines(dataframe_bimbi_cng.mean(), 0, 50, transform=axs[id_circolo].get_xaxis_transform(), color='blue')
             axs[id_circolo].annotate(str(math.ceil(dataframe_bimbi_cng.mean())), (dataframe_bimbi_cng.mean()+SWITCH_ANNOTATE_VLINES_05, 0))
