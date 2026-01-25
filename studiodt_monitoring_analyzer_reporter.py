@@ -219,7 +219,7 @@ if __name__ == '__main__':
     colormap_viridis = mpl.colormaps['viridis'].colors
     colormap_turbo = mpl.colormaps['turbo'].colors
 
-if True:
+if False:
 	# 1. rappresentazione territoriale
 	#   - chart | provincia | pie | numero bimbi nei circoli (13) | ci sono grandi e piccoli circoli?
     dimensioni_circoli = []
@@ -278,7 +278,7 @@ if True:
         plt.show()
     plt.close()
 
-if True:
+if False:
     # 2. rappresentazione genere e provenienza (M, F)
 	#   - chart | provincia | pie | percentuale bimbi per genere e provenienza (straniero) | ci sono squilibri di genere e per etnia?
     def chart_pie_bimbi_genere_provenienza(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_02_pie_percentuale_bimbi_genere_provenienza'):
@@ -328,7 +328,7 @@ if True:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 3. rappresentazione sostegno
 	# 	- chart | provincia | bar | numero bimbi seguiti dalla rilevazione 1 alla 2 | c'e' un cambiamento nel numero di bimbi seguiti?
     def chart_bar_bimbi_seguiti(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_03_bar_percentuale_bimbi_seguiti'):
@@ -391,7 +391,7 @@ if True:
             plt.show()
         plt.close()
 
-if True:
+if False:
 	# 4. rappresentazione eta'
     #   - chart | provincia | hist | eta' bimbi rilevazione 1 e 2 (mesi) | qual e' il cambiamento nella distribuzione dell'eta'?
     def chart_hist_bimbi_eta(dataframe_bimbi, title_prefix='', toggle_fig_savefig=False, filename_suffix='chart_04_hist_distribuzione_bimbi_eta'):
@@ -480,6 +480,7 @@ if True:
                                 FILENAME_PREFIX_SCUOLE_INFANZIA_GRAFICI_2024_25 + \
                                 filename_suffix),
                 dpi=300, bbox_inches='tight', pad_inches=0.25)
+if False:
     chart_hist_distribuzioni_metriche(dataframe_scuole_infanzia_2024_25,
                                       'PAT | ', TOGGLE_FIG_SAVEFIG, 'chart_05a_provincia_hist_distribuzioni_metriche')
     if TOGGLE_PLT_SHOW:
@@ -644,7 +645,7 @@ if True:
     #     plt.show()
     # plt.close()
 
-if True:
+if False:
 	# 6. rappresentazione performance
 	# 	- chart | provincia | hist | performance circoli rilevazione 1 e 2 | ci sono circoli che piu' marcatamente cambiano (in meglio o in peggio)?
     performance_circoli_rcc = []
@@ -753,3 +754,20 @@ if True:
         if TOGGLE_PLT_SHOW:
             plt.show()
         plt.close()
+
+if True:
+	# 7. verifica ipotesi
+    # 	- chart | provincia | hist | distribuzioni dei bimbi di 66 e 67 mesi di coniglietto e riccio | interesse soprattutto sulle metriche di lessico, sintassi, pragmatica di coniglietto e riccio | rilevazioni ottobre e maggio
+    AGE_LOWER_IN_BOUND = 66
+    AGE_UPPER_IN_BOUND = 67
+    filter_age_cng = (dataframe_scuole_infanzia_2024_25['storia_coniglietto_eta'] >= AGE_LOWER_IN_BOUND) & \
+                     (dataframe_scuole_infanzia_2024_25['storia_coniglietto_eta'] <= AGE_UPPER_IN_BOUND)
+    filter_age_rcc = (dataframe_scuole_infanzia_2024_25['storia_riccio_eta'] >= AGE_LOWER_IN_BOUND) & \
+                     (dataframe_scuole_infanzia_2024_25['storia_riccio_eta'] <= AGE_UPPER_IN_BOUND)
+    chart_hist_distribuzioni_metriche(dataframe_scuole_infanzia_2024_25[filter_age_cng],
+                                      'PAT | 66-67 mesi a ottobre | ', TOGGLE_FIG_SAVEFIG, 'chart_07a_provincia_hist_verifica_ipotesi_cng')
+    chart_hist_distribuzioni_metriche(dataframe_scuole_infanzia_2024_25[filter_age_rcc],
+                                      'PAT | 66-67 mesi a maggio | ', TOGGLE_FIG_SAVEFIG, 'chart_07a_provincia_hist_verifica_ipotesi_rcc')
+    if TOGGLE_PLT_SHOW:
+        plt.show()
+    plt.close()
