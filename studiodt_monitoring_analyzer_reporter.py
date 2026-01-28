@@ -769,7 +769,7 @@ if True:
     chart_hist_distribuzioni_metriche(dataframe_scuole_infanzia_2024_25[filter_age_rcc],
                                       'PAT | 66-67 mesi a maggio | ', TOGGLE_FIG_SAVEFIG, 'chart_07a_provincia_hist_verifica_ipotesi_rcc')
     chart_hist_distribuzioni_metriche(pd.concat([dataframe_scuole_infanzia_2024_25[filter_age_cng][LABELS_CNG_FEATURES], dataframe_scuole_infanzia_2024_25[filter_age_rcc][LABELS_RCC_FEATURES]], ignore_index=True),
-                                      'PAT | 66-67 mesi a ottobre e maggio | ', TOGGLE_FIG_SAVEFIG, 'chart_07a_provincia_hist_verifica_ipotesi')
+                                      'PAT | 66-67 mesi | ', TOGGLE_FIG_SAVEFIG, 'chart_07a_provincia_hist_verifica_ipotesi')
     if TOGGLE_PLT_SHOW:
         plt.show()
     plt.close()
